@@ -1,0 +1,20 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include <memory>
+
+#include "Constants.h"
+#include "Deck.h"
+
+class Ship
+{
+public:
+	Ship(TypeShip type, std::vector<sf::Vector2f> positions, std::vector<DeckState> states);
+	void render(sf::RenderWindow& window);
+private:
+	std::vector<std::shared_ptr<Deck>> mDecks;
+	TypeShip mType;
+	std::vector<sf::Vector2f> mPositions;
+	std::vector<DeckState> mDeckStates;
+};
+
