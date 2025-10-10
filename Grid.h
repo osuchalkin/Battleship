@@ -18,7 +18,7 @@ class Grid
 public:
 	Grid();
 	void setDeck(int x, int y);
-	char getCell(int x, int y) const { return mCells[y][x]; }
+	char getCell(int x, int y) const { return mCells[x][y]; }
 	
 private:
 	std::array<std::array<char, CELL_WIDTH>, CELL_HEIGHT> mCells;

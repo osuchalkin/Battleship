@@ -26,15 +26,26 @@ Grid::Grid() :
 
 void Grid::setDeck(int x, int y)
 {
+	std::cout << "Check place ship at (" << x << ", " << y << ")" << std::endl;
 	if (mCells[y][x] != EMPTY_CELL)
 		return;
-	else
+	else if (checkPlaceShip(y, x))
+	{
 		mCells[y][x] = SHIP_CELL;
-	mDeckCount++;
+		mDeckCount++;
+		if (isNumberInSet(mDeckCount, "ShipReady"))
+		{
+			// set HALO
+			std::cout << "Ship is ready!" << std::endl;
+		}
+	}
 }
 
 bool Grid::checkPlaceShip(int x, int y)
 {
+	if (mCells[x][y] != EMPTY_CELL)
+		return false;
+
 	mCells[x][y] = SHIP_CELL;
 	if (isNumberInSet(mDeckCount, "SetA"))
 	{
@@ -42,19 +53,48 @@ bool Grid::checkPlaceShip(int x, int y)
 	}
 	else if (isNumberInSet(mDeckCount, "SetB"))
 	{
-		if (mCells[x][y] == mCells[x + 1][y] 
-			|| mCells[x][y] == mCells[x - 1][y] 
-				|| mCells[x][y] == mCells[x][y + 1]
-					|| mCells[x][y] == mCells[x][y - 1])
+		if (mCells[x][y] == mCells[x + 1][y] || mCells[x][y] == mCells[x - 1][y] 
+			|| mCells[x][y] == mCells[x][y + 1] || mCells[x][y] == mCells[x][y - 1])
 			return true;
 	}
-	// TODO
 	else if (isNumberInSet(mDeckCount, "SetC"))
 	{
-		if ((mCells[x][y] == mCells[x + 1][y] && mCells[x][y] == mCells[x + 2][y])
-			|| (mCells[x][y] == mCells[x - 1][y] && mCells[x][y] == mCells[x - 2][y])
-			|| (mCells[x][y] == mCells[x][y + 1] && mCells[x][y] == mCells[x][y + 2])
-			|| (mCells[x][y] == mCells[x][y - 1] && mCells[x][y] == mCells[x][y - 2]))
-			return true;
+		if (1 < x < 10)
+		{
+			if (mCells[x - 1][y] == mCells[x - 2][y] == SHIP_CELL 
+				|| mCells[x + 1][y] == mCells[x + 2][y] == SHIP_CELL)
+				return true;
+		}
+		else if (1 < y < 10)
+		{
+			if (mCells[x][y - 1] == mCells[x][y - 2] == SHIP_CELL
+				|| mCells[x][y + 1] == mCells[x][y + 2] == SHIP_CELL)
+				return true;
+		}
+		else if (x == 1)
+		{
+			if (mCells[x + 1][y] == mCells[x + 2][y] == SHIP_CELL)
+				return true;
+		}
+		else if (x == 10)
+		{
+			if (mCells[x - 1][y] == mCells[x - 2][y] == SHIP_CELL)
+				return true;
+		}
+		else if (y == 1)
+		{
+			if (mCells[x][y + 1] == mCells[x][y + 2] == SHIP_CELL)
+				return true;
+		}
+		else if (y == 10)
+		{
+			if (mCells[x][y - 1] == mCells[x][y - 2] == SHIP_CELL)
+				return true;
+		}
 	}
+	else
+	{
+		mCells[x][y] = EMPTY_CELL;
+		return false;
+	}	
 }

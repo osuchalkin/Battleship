@@ -124,10 +124,10 @@ void World::renderCells(sf::RenderWindow& window)
 	{
 		for (size_t row = 0; row < CELL_HEIGHT; row++)
 		{
-			if (mPlayerGrid->getCell(row, col) == 'S')
+			if (mPlayerGrid->getCell(col, row) == 'S')
 			{
-				mCells[col][row].setPosition(X_MARGIN + 1 + row * DECK_SPACE,
-					Y_MARGIN + 1 + col * DECK_SPACE);
+				mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
+					Y_MARGIN + 1 + row * DECK_SPACE);
 				mCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
 				window.draw(mCells[col][row]);
 			}
@@ -178,7 +178,10 @@ void World::setupPlayerFleet(sf::Vector2i mousePos)
 			{
 				mPlayerGrid->setDeck(row, col);
 				if (mPlayerGrid->getCell(row, col) == 'S')
-					mCells[col][row].setFillColor(DECK_COLOR);
+				{
+					mCells[row][col].setFillColor(DECK_COLOR);
+					std::cout << "Set deck at (" << row << ", " << col << ")" << std::endl;
+				}					
 			}
 		}
 	}
