@@ -18,13 +18,15 @@ class Grid
 public:
 	Grid();
 	void setDeck(int x, int y);
-	char getCell(int x, int y) const { return mCells[x][y]; }
-	
+	char getCell(int x, int y) const { return mGridCells[x][y]; }
+public:
+	bool mIsShipReady;
 private:
-	std::array<std::array<char, CELL_WIDTH>, CELL_HEIGHT> mCells;
+	std::array<std::array<char, CELL_WIDTH>, CELL_HEIGHT> mGridCells;
 	int mDeckCount;
 	
 private:
 	bool checkPlaceShip(int x, int y);
+	void setHalo(char status);
 };
 

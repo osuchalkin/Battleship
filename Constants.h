@@ -54,7 +54,7 @@ enum class TypeShip
 constexpr int CELL_WIDTH = 12;
 constexpr int CELL_HEIGHT = 12;
 
-constexpr char EMPTY_CELL = ' ';
+constexpr char EMPTY_CELL = 'E';
 constexpr char SHIP_CELL = 'S';
 constexpr char HALO_CELL = 'H';
 constexpr char WOUNDED_CELL = 'W';

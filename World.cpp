@@ -74,6 +74,9 @@ void World::update(sf::Time deltaTime)
 	if (mGameState == GameState::Preparing)
 	{
 		// Расстановка кораблей
+		// if (grid.deckCount == 20)
+		if (mPlayerGrid->mIsShipReady && mFleetPrepare->mShips.empty()) // TODO
+			mGameState = GameState::Playing;
 	}
 	else
 	{
@@ -111,8 +114,8 @@ void World::setupCells()
 	{
 		for (size_t row = 0; row < CELL_HEIGHT; row++)
 		{
-			mCells[col][row].setPosition(X_MARGIN + row * DECK_SPACE,
-				Y_MARGIN + col * DECK_SPACE);
+			mCells[col][row].setPosition(X_MARGIN + 1+ col * DECK_SPACE,
+				Y_MARGIN + 1 + row * DECK_SPACE);
 			mCells[col][row].setSize(sf::Vector2f(DECK_SPACE, DECK_SPACE));
 		}
 	}
@@ -129,6 +132,7 @@ void World::renderCells(sf::RenderWindow& window)
 				mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
 					Y_MARGIN + 1 + row * DECK_SPACE);
 				mCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
+				mCells[col][row].setFillColor(DECK_COLOR); 
 				window.draw(mCells[col][row]);
 			}
 		}
@@ -170,18 +174,19 @@ void World::setupPlayerFleet(sf::Vector2i mousePos)
 		return;
 
 	// check which cell is clicked
-	for (size_t col = 0; col < CELL_WIDTH; col++)
+	for (size_t col = 0; col < CELL_HEIGHT; col++)
 	{
-		for (size_t row = 0; row < CELL_HEIGHT; row++)
+		for (size_t row = 0; row < CELL_WIDTH; row++)
 		{
 			if (mCells[col][row].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
 			{
-				mPlayerGrid->setDeck(row, col);
-				if (mPlayerGrid->getCell(row, col) == 'S')
+				mPlayerGrid->setDeck(col, row);
+				if (mPlayerGrid->mIsShipReady)
 				{
-					mCells[row][col].setFillColor(DECK_COLOR);
-					std::cout << "Set deck at (" << row << ", " << col << ")" << std::endl;
-				}					
+					// remove ship from preparing fleet
+					mFleetPrepare->removePreparedShip();		// TODO
+					mPlayerGrid->mIsShipReady = false;
+				}
 			}
 		}
 	}

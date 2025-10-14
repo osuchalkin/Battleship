@@ -49,3 +49,9 @@ void Fleet::createFleetForPreparing()
 	createShipForPreparing(TypeShip::OneDeck, 0, 5);
 	createShipForPreparing(TypeShip::OneDeck, 7, 5);
 }
+
+void Fleet::removePreparedShip()
+{
+	if (!mShips.empty())
+		mShips.erase(mShips.begin());
+}

@@ -15,10 +15,11 @@ static bool isNumberInSet(int number, const std::string& set_name) {
 
 
 Grid::Grid() :
-	mCells(),
+	mIsShipReady(false),
+	mGridCells(),
 	mDeckCount(0)
 {
-	for (auto& row : mCells)
+	for (auto& row : mGridCells)
 	{
 		row.fill(EMPTY_CELL);
 	}
@@ -26,75 +27,105 @@ Grid::Grid() :
 
 void Grid::setDeck(int x, int y)
 {
-	std::cout << "Check place ship at (" << x << ", " << y << ")" << std::endl;
-	if (mCells[y][x] != EMPTY_CELL)
+	//mIsShipReady = false;
+	if (mGridCells[x][y] != EMPTY_CELL)
 		return;
-	else if (checkPlaceShip(y, x))
+	else if (checkPlaceShip(x, y))
 	{
-		mCells[y][x] = SHIP_CELL;
+		mGridCells[x][y] = SHIP_CELL;
 		mDeckCount++;
 		if (isNumberInSet(mDeckCount, "ShipReady"))
 		{
 			// set HALO
-			std::cout << "Ship is ready!" << std::endl;
+			setHalo(SHIP_CELL);
+			mIsShipReady = true;
 		}
 	}
 }
 
 bool Grid::checkPlaceShip(int x, int y)
 {
-	if (mCells[x][y] != EMPTY_CELL)
+	if (mGridCells[x][y] != EMPTY_CELL)
 		return false;
 
-	mCells[x][y] = SHIP_CELL;
+	mGridCells[x][y] = SHIP_CELL;
 	if (isNumberInSet(mDeckCount, "SetA"))
 	{
 		return true;
 	}
 	else if (isNumberInSet(mDeckCount, "SetB"))
 	{
-		if (mCells[x][y] == mCells[x + 1][y] || mCells[x][y] == mCells[x - 1][y] 
-			|| mCells[x][y] == mCells[x][y + 1] || mCells[x][y] == mCells[x][y - 1])
+		if (mGridCells[x][y] == mGridCells[x + 1][y] || mGridCells[x][y] == mGridCells[x - 1][y]
+			|| mGridCells[x][y] == mGridCells[x][y + 1] || mGridCells[x][y] == mGridCells[x][y - 1])
 			return true;
 	}
 	else if (isNumberInSet(mDeckCount, "SetC"))
 	{
-		if (1 < x < 10)
+		if (x > 1 && x < 10)
 		{
-			if (mCells[x - 1][y] == mCells[x - 2][y] == SHIP_CELL 
-				|| mCells[x + 1][y] == mCells[x + 2][y] == SHIP_CELL)
+			if ((mGridCells[x - 1][y] == SHIP_CELL && mGridCells[x - 2][y] == SHIP_CELL)
+				|| (mGridCells[x + 1][y] == SHIP_CELL && mGridCells[x + 2][y] == SHIP_CELL))
 				return true;
 		}
-		else if (1 < y < 10)
+		if (y > 1 && y < 10)
 		{
-			if (mCells[x][y - 1] == mCells[x][y - 2] == SHIP_CELL
-				|| mCells[x][y + 1] == mCells[x][y + 2] == SHIP_CELL)
+			if ((mGridCells[x][y - 1] == SHIP_CELL && mGridCells[x][y - 2] == SHIP_CELL)
+				|| (mGridCells[x][y + 1] == SHIP_CELL && mGridCells[x][y + 2] == SHIP_CELL))
 				return true;
 		}
-		else if (x == 1)
+		if (x == 1)
 		{
-			if (mCells[x + 1][y] == mCells[x + 2][y] == SHIP_CELL)
+			if (mGridCells[x + 1][y] == SHIP_CELL && mGridCells[x + 2][y] == SHIP_CELL)
 				return true;
 		}
-		else if (x == 10)
+		if (x == 10)
 		{
-			if (mCells[x - 1][y] == mCells[x - 2][y] == SHIP_CELL)
+			if (mGridCells[x - 1][y] == SHIP_CELL && mGridCells[x - 2][y] == SHIP_CELL)
 				return true;
 		}
-		else if (y == 1)
+		if (y == 1)
 		{
-			if (mCells[x][y + 1] == mCells[x][y + 2] == SHIP_CELL)
+			if (mGridCells[x][y + 1] == SHIP_CELL && mGridCells[x][y + 2] == SHIP_CELL)
 				return true;
 		}
-		else if (y == 10)
+		if (y == 10)
 		{
-			if (mCells[x][y - 1] == mCells[x][y - 2] == SHIP_CELL)
+			if (mGridCells[x][y - 1] == SHIP_CELL && mGridCells[x][y - 2] == SHIP_CELL)
 				return true;
 		}
 	}
-	else
+	// not valid place for ship
+	mGridCells[x][y] = EMPTY_CELL;
+	return false;
+}
+
+void Grid::setHalo(char status)
+{
+	char status_to_set = (status == SHIP_CELL) ? HALO_CELL : SHOOT_CELL;
+
+	for (int x = 1; x < CELL_WIDTH - 1; x++)
 	{
-		mCells[x][y] = EMPTY_CELL;
-		return false;
-	}	
+		for (int y = 1; y < CELL_HEIGHT; y++)
+		{
+			if (mGridCells[x][y] == status)
+			{
+				if (mGridCells[x - 1][y - 1] == EMPTY_CELL)
+					mGridCells[x - 1][y - 1] = status_to_set;
+				if (mGridCells[x][y - 1] == EMPTY_CELL)
+					mGridCells[x][y - 1] = status_to_set;
+				if (mGridCells[x + 1][y - 1] == EMPTY_CELL)
+					mGridCells[x + 1][y - 1] = status_to_set;
+				if (mGridCells[x - 1][y] == EMPTY_CELL)
+					mGridCells[x - 1][y] = status_to_set;
+				if (mGridCells[x + 1][y] == EMPTY_CELL)
+					mGridCells[x + 1][y] = status_to_set;
+				if (mGridCells[x - 1][y + 1] == EMPTY_CELL)
+					mGridCells[x - 1][y + 1] = status_to_set;
+				if (mGridCells[x][y + 1] == EMPTY_CELL)
+					mGridCells[x][y + 1] = status_to_set;
+				if (mGridCells[x + 1][y + 1] == EMPTY_CELL)
+					mGridCells[x + 1][y + 1] = status_to_set;
+			}
+		}
+	}
 }
