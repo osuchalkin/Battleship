@@ -53,6 +53,7 @@ enum class TypeShip
 //grid
 constexpr int CELL_WIDTH = 12;
 constexpr int CELL_HEIGHT = 12;
+constexpr int TOTAL_DECKS_COMPUTER = 20;
 
 constexpr char EMPTY_CELL = 'E';
 constexpr char SHIP_CELL = 'S';

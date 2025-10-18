@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include <array>
+#include <vector>
 #include <unordered_set>
 #include <map>
 
@@ -19,12 +20,14 @@ public:
 	Grid();
 	void setDeck(int x, int y);
 	char getCell(int x, int y) const { return mGridCells[x][y]; }
+	int getDeckCount() const { return mDeckCount; }	
+	bool checkShot(int x, int y);
 public:
 	bool mIsShipReady;
 private:
 	std::array<std::array<char, CELL_WIDTH>, CELL_HEIGHT> mGridCells;
 	int mDeckCount;
-	
+	std::vector<std::pair<int, int>> mPositions;
 private:
 	bool checkPlaceShip(int x, int y);
 	void setHalo(char status);

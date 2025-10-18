@@ -27,18 +27,19 @@ Grid::Grid() :
 
 void Grid::setDeck(int x, int y)
 {
-	//mIsShipReady = false;
 	if (mGridCells[x][y] != EMPTY_CELL)
 		return;
 	else if (checkPlaceShip(x, y))
 	{
 		mGridCells[x][y] = SHIP_CELL;
 		mDeckCount++;
+		mPositions.push_back({ x, y });
 		if (isNumberInSet(mDeckCount, "ShipReady"))
 		{
-			// set HALO
+			// создать корабль на сетке (тип и координаты) // TODO
 			setHalo(SHIP_CELL);
 			mIsShipReady = true;
+			//mPositions.clear();
 		}
 	}
 }
@@ -128,4 +129,12 @@ void Grid::setHalo(char status)
 			}
 		}
 	}
+}
+
+bool Grid::checkShot(int x, int y)
+{
+	if (mGridCells[x][y] == SHIP_CELL)
+		return true;
+	else 
+		return false;
 }

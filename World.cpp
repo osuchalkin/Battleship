@@ -4,6 +4,7 @@
 #include <iostream>		// for debug
 #include <memory>
 
+
 World::World() :
 	mOceanGridTexture(),
 	mOceanGridSprite(),
@@ -15,11 +16,22 @@ World::World() :
 	mGameState(GameState::Preparing),
 	mFleetPrepare(std::make_unique<Fleet>()),
 	mPlayerGrid(std::make_unique<Grid>()),
-	mCells()
+	mCells(),
+	mComputerGrid(std::make_unique<Grid>()),
+	mCompCells(),
+	mTurn("")
 {
+	mt.seed(std::random_device{}());
+
 	setupCells();
 	setupText();
 	generateWorld();
+}
+
+int World::getRandNum(int first, int last)
+{
+	std::uniform_int_distribution<> myNumber{ first, last };
+	return myNumber(mt);
 }
 
 void World::generateWorld()
@@ -33,6 +45,12 @@ void World::generateWorld()
 	mOceanGridSprite.setPosition(X_MARGIN, Y_MARGIN);
 	mRadarGridSprite.setPosition(X2_MARGIN, Y_MARGIN);
 
+	if (getRandNum(0, 1) == 0)
+		mTurn = "player";
+	else
+		mTurn = "computer";
+
+	setupComputerFleet();
 	mFleetPrepare->createFleetForPreparing();
 }
 
@@ -56,15 +74,17 @@ void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
 	}
 	else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 	{
+		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
 		if (mGameState == GameState::Preparing)
 		{
-			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 			// Расстановка кораблей
 			setupPlayerFleet(mousePos);
 		}
 		else if (mGameState == GameState::Playing)
 		{
 			// Ход игрока
+			checkPlayerShot(mousePos);
 		}
 	}
 }
@@ -74,8 +94,7 @@ void World::update(sf::Time deltaTime)
 	if (mGameState == GameState::Preparing)
 	{
 		// Расстановка кораблей
-		// if (grid.deckCount == 20)
-		if (mPlayerGrid->mIsShipReady && mFleetPrepare->mShips.empty()) // TODO
+		if (mFleetPrepare->mIsFleetReady())
 			mGameState = GameState::Playing;
 	}
 	else
@@ -83,10 +102,14 @@ void World::update(sf::Time deltaTime)
 		// Игра
 		if (mGameState == GameState::Playing)
 		{
-			// if (ход игрока - mTurn == "player")
-				// получить ход игрока
-			// else
-				// получить ход компьютера
+			if (mTurn == "player")
+			{
+				//std::cout << "Player's turn\n";
+			}
+			else
+			{
+				//std::cout << "Computer's turn\n";
+			}
 		// else if (mGameState == GameState::GameOver)
 			// показать победителя, начать заново
 		}
@@ -100,7 +123,10 @@ void World::render(sf::RenderWindow& window)
 
 	window.draw(mOceanGridSprite);
 	if (mGameState == GameState::Playing)
+	{
 		window.draw(mRadarGridSprite);
+		renderCells(window);
+	}
 	else if (mGameState == GameState::Preparing)
 	{
 		mFleetPrepare->render(window);
@@ -114,9 +140,13 @@ void World::setupCells()
 	{
 		for (size_t row = 0; row < CELL_HEIGHT; row++)
 		{
-			mCells[col][row].setPosition(X_MARGIN + 1+ col * DECK_SPACE,
+			mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
 				Y_MARGIN + 1 + row * DECK_SPACE);
 			mCells[col][row].setSize(sf::Vector2f(DECK_SPACE, DECK_SPACE));
+			// computer cells
+			mCompCells[col][row].setPosition(X2_MARGIN + 1 + col * DECK_SPACE,
+				Y_MARGIN + 1 + row * DECK_SPACE);
+			mCompCells[col][row].setSize(sf::Vector2f(DECK_SPACE, DECK_SPACE));
 		}
 	}
 }
@@ -129,12 +159,22 @@ void World::renderCells(sf::RenderWindow& window)
 		{
 			if (mPlayerGrid->getCell(col, row) == 'S')
 			{
-				mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
-					Y_MARGIN + 1 + row * DECK_SPACE);
+				//mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
+				//	Y_MARGIN + 1 + row * DECK_SPACE);
 				mCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
 				mCells[col][row].setFillColor(DECK_COLOR); 
 				window.draw(mCells[col][row]);
 			}
+			/*
+			if (mComputerGrid->getCell(col, row) == 'S')
+			{
+				//mCompCells[col][row].setPosition(X2_MARGIN + 1 + col * DECK_SPACE,
+				//	Y_MARGIN + 1 + row * DECK_SPACE);
+				mCompCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
+				mCompCells[col][row].setFillColor(DECK_COLOR);
+				window.draw(mCompCells[col][row]);
+			}
+			*/
 		}
 	}
 }
@@ -184,8 +224,48 @@ void World::setupPlayerFleet(sf::Vector2i mousePos)
 				if (mPlayerGrid->mIsShipReady)
 				{
 					// remove ship from preparing fleet
-					mFleetPrepare->removePreparedShip();		// TODO
+					mFleetPrepare->removePreparedShip();
 					mPlayerGrid->mIsShipReady = false;
+				}
+			}
+		}
+	}
+}
+
+void World::setupComputerFleet()
+{
+	while (mComputerGrid->getDeckCount() < TOTAL_DECKS_COMPUTER)
+	{
+		int x = getRandNum(1, 10);
+		int y = getRandNum(1, 10);
+		mComputerGrid->setDeck(x, y);
+	}
+}
+
+void World::checkPlayerShot(sf::Vector2i mousePos)
+{
+
+	// check mouse position in left grid
+	if (mousePos.x < X2_MARGIN + DECK_SPACE || mousePos.x > X2_MARGIN + GRID_WIDTH ||
+		mousePos.y < Y_MARGIN + DECK_SPACE || mousePos.y > Y_MARGIN + GRID_WIDTH)
+		return;
+	// check which cell is clicked
+	for (size_t col = 0; col < CELL_HEIGHT; col++)
+	{
+		for (size_t row = 0; row < CELL_WIDTH; row++)
+		{
+			if (mCompCells[col][row].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+			{
+				// process shot
+				std::cout << "Player shot at cell: (" << col << ", " << row << ")\n";
+				if (mComputerGrid->checkShot(col, row))
+				{
+					// получить тип корабля по координатам
+					std::cout << "Hit!\n";
+				}
+				else
+				{
+					std::cout << "Miss!\n";
 				}
 			}
 		}
