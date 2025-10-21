@@ -19,6 +19,8 @@ World::World() :
 	mCells(),
 	mComputerGrid(std::make_unique<Grid>()),
 	mCompCells(),
+	mPlayerFleet(std::make_unique<Fleet>()),
+	mComputerFleet(std::make_unique<Fleet>()),
 	mTurn("")
 {
 	mt.seed(std::random_device{}());
@@ -157,13 +159,25 @@ void World::renderCells(sf::RenderWindow& window)
 	{
 		for (size_t row = 0; row < CELL_HEIGHT; row++)
 		{
-			if (mPlayerGrid->getCell(col, row) == 'S')
+			if (mPlayerGrid->getCell(col, row) == SHIP_CELL)
 			{
 				//mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
 				//	Y_MARGIN + 1 + row * DECK_SPACE);
 				mCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
 				mCells[col][row].setFillColor(DECK_COLOR); 
 				window.draw(mCells[col][row]);
+			}
+			if (mComputerGrid->getCell(col, row) == WOUNDED_CELL)
+			{
+				mCompCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
+				mCompCells[col][row].setFillColor(DECK_WOUNDED_COLOR);
+				window.draw(mCompCells[col][row]);
+			}
+			if (mComputerGrid->getCell(col, row) == KILLED_CELL)
+			{
+				mCompCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
+				mCompCells[col][row].setFillColor(DECK_KILLED_COLOR);
+				window.draw(mCompCells[col][row]);
 			}
 			/*
 			if (mComputerGrid->getCell(col, row) == 'S')
@@ -223,10 +237,12 @@ void World::setupPlayerFleet(sf::Vector2i mousePos)
 				mPlayerGrid->setDeck(col, row);
 				if (mPlayerGrid->mIsShipReady)
 				{
-					// playerFleet->createShip(mPlayerGrid->mPositions);
+					mPlayerFleet->createShip(mPlayerGrid->mPositions);
 					// remove ship from preparing fleet
 					mFleetPrepare->removePreparedShip();
 					mPlayerGrid->mIsShipReady = false;
+					// clear positions for next ship
+					mPlayerGrid->mPositions.clear();
 				}
 			}
 		}
@@ -240,12 +256,18 @@ void World::setupComputerFleet()
 		int x = getRandNum(1, 10);
 		int y = getRandNum(1, 10);
 		mComputerGrid->setDeck(x, y);
+
+		if (mComputerGrid->mIsShipReady)
+		{
+			mComputerFleet->createShip(mComputerGrid->mPositions);
+			mComputerGrid->mIsShipReady = false;
+			mComputerGrid->mPositions.clear();
+		}
 	}
 }
 
 void World::checkPlayerShot(sf::Vector2i mousePos)
 {
-
 	// check mouse position in left grid
 	if (mousePos.x < X2_MARGIN + DECK_SPACE || mousePos.x > X2_MARGIN + GRID_WIDTH ||
 		mousePos.y < Y_MARGIN + DECK_SPACE || mousePos.y > Y_MARGIN + GRID_WIDTH)
@@ -262,11 +284,14 @@ void World::checkPlayerShot(sf::Vector2i mousePos)
 				if (mComputerGrid->checkShot(col, row))
 				{
 					// получить тип корабля по координатам
-					std::cout << "Hit!\n";
+					TypeShip type = mComputerFleet->getTypeShip(sf::Vector2i(static_cast<int>(col), static_cast<int>(row)));
+					mComputerGrid->woundedOrKilled(type, col, row);
+					std::cout << "Hit! " << static_cast<int>(type) << "-deck ship.\n";
 				}
 				else
 				{
 					std::cout << "Miss!\n";
+					// mTurn = "computer"; // switch turn to computer
 				}
 			}
 		}

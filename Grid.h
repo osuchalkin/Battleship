@@ -22,6 +22,7 @@ public:
 	char getCell(int x, int y) const { return mGridCells[x][y]; }
 	int getDeckCount() const { return mDeckCount; }	
 	bool checkShot(int x, int y);
+	void woundedOrKilled(TypeShip type, int x, int y);
 public:
 	bool mIsShipReady;
 	std::vector<sf::Vector2i> mPositions;

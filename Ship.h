@@ -11,6 +11,8 @@ class Ship
 public:
 	Ship(TypeShip type, std::vector<sf::Vector2f>& positions, std::vector<DeckState>& states);
 	void render(sf::RenderWindow& window);
+	std::vector<sf::Vector2f> getPositions() const { return mPositions; }
+	TypeShip getType() const { return mType; }
 private:
 	std::vector<std::shared_ptr<Deck>> mDecks;
 	TypeShip mType;

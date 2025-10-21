@@ -51,6 +51,9 @@ private:
 	std::unique_ptr<Grid> mComputerGrid;
 	std::array<std::array<sf::RectangleShape, CELL_WIDTH>, CELL_HEIGHT> mCompCells;
 
+	std::unique_ptr<Fleet> mPlayerFleet;
+	std::unique_ptr<Fleet> mComputerFleet;
+
 	std::string mTurn; // "player" or "computer"
 };
 
