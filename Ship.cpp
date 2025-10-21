@@ -1,6 +1,6 @@
 #include "Ship.h"
 
-Ship::Ship(TypeShip type, std::vector<sf::Vector2f> positions, std::vector<DeckState> states) :
+Ship::Ship(TypeShip type, std::vector<sf::Vector2f>& positions, std::vector<DeckState>& states) :
 	mDecks(),
 	mType(type),
 	mPositions(positions),

@@ -24,10 +24,10 @@ public:
 	bool checkShot(int x, int y);
 public:
 	bool mIsShipReady;
+	std::vector<sf::Vector2i> mPositions;
 private:
 	std::array<std::array<char, CELL_WIDTH>, CELL_HEIGHT> mGridCells;
 	int mDeckCount;
-	std::vector<std::pair<int, int>> mPositions;
 private:
 	bool checkPlaceShip(int x, int y);
 	void setHalo(char status);

@@ -55,3 +55,34 @@ void Fleet::removePreparedShip()
 	if (!mShips.empty())
 		mShips.erase(mShips.begin());
 }
+
+void Fleet::createShip(std::vector<sf::Vector2i>& positions)
+{
+	TypeShip type;
+	switch (positions.size())
+	{
+	case 1:
+		type = TypeShip::OneDeck;
+		break;
+	case 2:
+		type = TypeShip::TwoDeck;
+		break;
+	case 3:
+		type = TypeShip::ThreeDeck;
+		break;
+	case 4:
+		type = TypeShip::FourDeck;
+		break;
+	default:
+		return;
+	}
+	std::vector<sf::Vector2f> pos_float;
+	std::vector<DeckState> states;
+	for (const auto& pos : positions)
+	{
+		pos_float.push_back({ static_cast<float>(pos.x), static_cast<float>(pos.y) });
+		states.push_back(DeckState::Normal);
+	}
+	auto ship = std::make_shared<Ship>(type, pos_float, states);
+	addShip(ship);
+}

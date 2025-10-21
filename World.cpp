@@ -94,7 +94,7 @@ void World::update(sf::Time deltaTime)
 	if (mGameState == GameState::Preparing)
 	{
 		// Расстановка кораблей
-		if (mFleetPrepare->mIsFleetReady())
+		if (mFleetPrepare->mIsFleetPrepareReady())
 			mGameState = GameState::Playing;
 	}
 	else
@@ -223,6 +223,7 @@ void World::setupPlayerFleet(sf::Vector2i mousePos)
 				mPlayerGrid->setDeck(col, row);
 				if (mPlayerGrid->mIsShipReady)
 				{
+					// playerFleet->createShip(mPlayerGrid->mPositions);
 					// remove ship from preparing fleet
 					mFleetPrepare->removePreparedShip();
 					mPlayerGrid->mIsShipReady = false;

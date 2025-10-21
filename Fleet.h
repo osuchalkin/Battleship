@@ -11,7 +11,8 @@ public:
 	void render(sf::RenderWindow& window);
 	void createFleetForPreparing();
 	void removePreparedShip(); 
-	bool mIsFleetReady() { return mShips.empty(); }
+	bool mIsFleetPrepareReady() { return mShips.empty(); }
+	void createShip(std::vector<sf::Vector2i>& positions);
 private:
 	std::vector<std::shared_ptr<Ship>> mShips;
 private:
