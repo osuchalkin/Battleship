@@ -13,7 +13,7 @@ public:
 	void removePreparedShip(); 
 	bool mIsFleetPrepareReady() { return mShips.empty(); }
 	void createShip(std::vector<sf::Vector2i>& positions);
-	TypeShip getTypeShip(sf::Vector2i position);
+	//TypeShip getTypeShip(sf::Vector2i position);
 	Ship* getShipAtPosition(sf::Vector2i position);
 private:
 	std::vector<std::shared_ptr<Ship>> mShips;

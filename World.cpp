@@ -295,7 +295,7 @@ void World::checkPlayerShot(sf::Vector2i mousePos)
 				std::cout << "Player shot at cell: (" << col << ", " << row << ")\n";
 				if (mComputerGrid->checkShot(col, row))
 				{
-					// получить тип корабля по координатам
+					// получить корабль по координатам
 					Ship* ship = mComputerFleet->getShipAtPosition(sf::Vector2i(static_cast<int>(col), static_cast<int>(row)));
 					mComputerGrid->woundedOrKilled(ship, col, row);
 					std::cout << "Hit!\n";
