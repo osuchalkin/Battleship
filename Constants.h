@@ -26,7 +26,7 @@ const sf::Color TEXT_SHADOW_COLOR(170, 170, 0);
 
 const sf::Color DECK_COLOR(255, 255, 0);
 const sf::Color DECK_WOUNDED_COLOR(255, 0, 0);
-const sf::Color DECK_KILLED_COLOR(129, 129, 129);
+const sf::Color DECK_KILLED_COLOR(100, 100, 100);
 
 const sf::Color HALO_COLOR(150, 150, 150);
 

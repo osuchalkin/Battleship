@@ -50,6 +50,7 @@ private:
 	std::array<std::array<sf::RectangleShape, CELL_WIDTH>, CELL_HEIGHT> mCells;
 	std::unique_ptr<Grid> mComputerGrid;
 	std::array<std::array<sf::RectangleShape, CELL_WIDTH>, CELL_HEIGHT> mCompCells;
+	sf::CircleShape mShotIndicator;
 
 	std::unique_ptr<Fleet> mPlayerFleet;
 	std::unique_ptr<Fleet> mComputerFleet;

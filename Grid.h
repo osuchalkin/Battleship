@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Constants.h"
+#include "Ship.h"
+
 #include <array>
 #include <vector>
 #include <unordered_set>
@@ -20,9 +22,10 @@ public:
 	Grid();
 	void setDeck(int x, int y);
 	char getCell(int x, int y) const { return mGridCells[x][y]; }
+	void setCell(int x, int y, char status) { mGridCells[x][y] = status; }
 	int getDeckCount() const { return mDeckCount; }	
 	bool checkShot(int x, int y);
-	void woundedOrKilled(TypeShip type, int x, int y);
+	void woundedOrKilled(Ship* ship, int x, int y);
 public:
 	bool mIsShipReady;
 	std::vector<sf::Vector2i> mPositions;

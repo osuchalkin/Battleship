@@ -138,74 +138,19 @@ bool Grid::checkShot(int x, int y)
 		return false;
 }
 
-void Grid::woundedOrKilled(TypeShip type, int x, int y)
+void Grid::woundedOrKilled(Ship* ship, int x, int y)
 {
-	if (type == TypeShip::OneDeck)
+	ship->registerHit({ static_cast<float>(x), static_cast<float>(y) });
+	if (ship->isSunk())
 	{
-		mGridCells[x][y] = KILLED_CELL;
+		for (const auto& pos : ship->getPositions())
+		{
+			mGridCells[pos.x][pos.y] = KILLED_CELL;
+		}
 		setHalo(KILLED_CELL);
 	}
-	if (type == TypeShip::TwoDeck)
+	else
 	{
-		if (mGridCells[x - 1][y] == WOUNDED_CELL || mGridCells[x + 1][y] == WOUNDED_CELL
-			|| mGridCells[x][y + 1] == WOUNDED_CELL || mGridCells[x][y - 1] == WOUNDED_CELL)
-		{
-			mGridCells[x][y] = KILLED_CELL;
-			setHalo(KILLED_CELL);
-		}
-		else
-		{
-			mGridCells[x][y] = WOUNDED_CELL;
-		}
-	}
-	if (type == TypeShip::ThreeDeck)
-	{
-		if (mGridCells[x - 1][y] == WOUNDED_CELL || mGridCells[x + 1][y] == WOUNDED_CELL
-			|| mGridCells[x][y + 1] == WOUNDED_CELL || mGridCells[x][y - 1] == WOUNDED_CELL)
-		{
-			if (mGridCells[x - 2][y] == WOUNDED_CELL || mGridCells[x + 2][y] == WOUNDED_CELL
-				|| mGridCells[x][y + 2] == WOUNDED_CELL || mGridCells[x][y - 2] == WOUNDED_CELL)
-			{
-				mGridCells[x][y] = KILLED_CELL;
-				setHalo(KILLED_CELL);
-			}
-			else
-			{
-				mGridCells[x][y] = WOUNDED_CELL;
-			}
-		}
-		else
-		{
-			mGridCells[x][y] = WOUNDED_CELL;
-		}
-	}
-	if (type == TypeShip::FourDeck)
-	{
-		if (mGridCells[x - 1][y] == WOUNDED_CELL || mGridCells[x + 1][y] == WOUNDED_CELL
-			|| mGridCells[x][y + 1] == WOUNDED_CELL || mGridCells[x][y - 1] == WOUNDED_CELL)
-		{
-			if (mGridCells[x - 2][y] == WOUNDED_CELL || mGridCells[x + 2][y] == WOUNDED_CELL
-				|| mGridCells[x][y + 2] == WOUNDED_CELL || mGridCells[x][y - 2] == WOUNDED_CELL)
-			{
-				if (mGridCells[x - 3][y] == WOUNDED_CELL || mGridCells[x + 3][y] == WOUNDED_CELL
-					|| mGridCells[x][y + 3] == WOUNDED_CELL || mGridCells[x][y - 3] == WOUNDED_CELL)
-				{
-					mGridCells[x][y] = KILLED_CELL;
-					setHalo(KILLED_CELL);
-				}
-				else
-				{
-					mGridCells[x][y] = WOUNDED_CELL;
-				}
-			}
-			else
-			{
-				mGridCells[x][y] = WOUNDED_CELL;
-			}
-		}
-		else
-		{
-			mGridCells[x][y] = WOUNDED_CELL;
-		}
+		mGridCells[x][y] = WOUNDED_CELL;
 	}
 }

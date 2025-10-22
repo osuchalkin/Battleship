@@ -21,3 +21,26 @@ void Ship::render(sf::RenderWindow& window)
 		deck->render(window);
 	}
 }
+
+void Ship::registerHit(const sf::Vector2f& position)
+{
+	for (size_t i = 0; i < mPositions.size(); ++i)
+	{
+		if (mPositions[i] == position)
+		{
+			mDeckStates[i] = DeckState::Wounded;
+			break;
+		}
+	}
+}
+
+bool Ship::isSunk() const
+{
+	int count = 0;
+	for (const auto& state : mDeckStates)
+	{
+		if (state == DeckState::Wounded)
+			count++;
+	}
+	return count == static_cast<int>(mType);
+}

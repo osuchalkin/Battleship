@@ -13,6 +13,9 @@ public:
 	void render(sf::RenderWindow& window);
 	std::vector<sf::Vector2f> getPositions() const { return mPositions; }
 	TypeShip getType() const { return mType; }
+	void registerHit(const sf::Vector2f& position);
+	bool isSunk() const;
+
 private:
 	std::vector<std::shared_ptr<Deck>> mDecks;
 	TypeShip mType;

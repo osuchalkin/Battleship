@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Constants.h"
+#include "Ship.h"
 
 #include <iostream>		// for debug
 #include <memory>
@@ -19,6 +20,7 @@ World::World() :
 	mCells(),
 	mComputerGrid(std::make_unique<Grid>()),
 	mCompCells(),
+	mShotIndicator(),
 	mPlayerFleet(std::make_unique<Fleet>()),
 	mComputerFleet(std::make_unique<Fleet>()),
 	mTurn("")
@@ -47,13 +49,17 @@ void World::generateWorld()
 	mOceanGridSprite.setPosition(X_MARGIN, Y_MARGIN);
 	mRadarGridSprite.setPosition(X2_MARGIN, Y_MARGIN);
 
+	mShotIndicator.setRadius(DECK_SIZE / 4);
+	mShotIndicator.setFillColor(HALO_COLOR);
+
+	// random first turn
 	if (getRandNum(0, 1) == 0)
 		mTurn = "player";
 	else
 		mTurn = "computer";
 
 	setupComputerFleet();
-	mFleetPrepare->createFleetForPreparing();
+	//mFleetPrepare->createFleetForPreparing();
 }
 
 void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
@@ -179,6 +185,12 @@ void World::renderCells(sf::RenderWindow& window)
 				mCompCells[col][row].setFillColor(DECK_KILLED_COLOR);
 				window.draw(mCompCells[col][row]);
 			}
+			if (mComputerGrid->getCell(col, row) == SHOOT_CELL)
+			{
+				mShotIndicator.setPosition(X2_MARGIN + 1 + col * DECK_SPACE + DECK_SIZE / 4,
+					Y_MARGIN + 1 + row * DECK_SPACE + DECK_SIZE / 4);
+				window.draw(mShotIndicator);
+			}
 			/*
 			if (mComputerGrid->getCell(col, row) == 'S')
 			{
@@ -284,13 +296,14 @@ void World::checkPlayerShot(sf::Vector2i mousePos)
 				if (mComputerGrid->checkShot(col, row))
 				{
 					// получить тип корабля по координатам
-					TypeShip type = mComputerFleet->getTypeShip(sf::Vector2i(static_cast<int>(col), static_cast<int>(row)));
-					mComputerGrid->woundedOrKilled(type, col, row);
-					std::cout << "Hit! " << static_cast<int>(type) << "-deck ship.\n";
+					Ship* ship = mComputerFleet->getShipAtPosition(sf::Vector2i(static_cast<int>(col), static_cast<int>(row)));
+					mComputerGrid->woundedOrKilled(ship, col, row);
+					std::cout << "Hit!\n";
 				}
 				else
 				{
 					std::cout << "Miss!\n";
+					mComputerGrid->setCell(col, row, SHOOT_CELL);
 					// mTurn = "computer"; // switch turn to computer
 				}
 			}
