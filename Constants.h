@@ -2,6 +2,9 @@
 
 #include<SFML/Graphics.hpp>
 
+
+constexpr float PI = 3.14159265358979323846f;
+
 // FPS
 const sf::Time TIME_PER_FRAME = sf::seconds(1.f / 60.f);
 
@@ -37,8 +40,12 @@ constexpr float DECK_SPACE = 41;
 enum class DeckState
 {
 	Normal,
-	Wounded,
-	Killed
+	Wounded
+};
+enum class ShipState
+{
+	Alive,
+	Sunk
 };
 
 // ships

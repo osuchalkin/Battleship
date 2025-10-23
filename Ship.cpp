@@ -4,7 +4,8 @@ Ship::Ship(TypeShip type, std::vector<sf::Vector2f>& positions, std::vector<Deck
 	mDecks(),
 	mType(type),
 	mPositions(positions),
-	mDeckStates(states)
+	mDeckStates(states),
+	mShipState(ShipState::Alive)
 
 {
 	for (int i = 0; i < static_cast<int>(mType); ++i)
@@ -42,5 +43,6 @@ bool Ship::isSunk() const
 		if (state == DeckState::Wounded)
 			count++;
 	}
+
 	return count == static_cast<int>(mType);
 }

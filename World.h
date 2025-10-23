@@ -23,9 +23,11 @@ private:
 	void setupText();
 	void setupPlayerFleet(sf::Vector2i mousePos);
 	void setupCells();
-	void renderCells(sf::RenderWindow& window);
+	void renderCells(sf::RenderWindow& window, std::string side, 
+		Grid* grid, std::array<std::array<sf::RectangleShape, CELL_WIDTH>, CELL_HEIGHT>& cells);
 	void setupComputerFleet();
 	void checkPlayerShot(sf::Vector2i mousePos);
+	void checkComputerShot();
 private:
 	enum class GameState
 	{
@@ -51,6 +53,9 @@ private:
 	std::unique_ptr<Grid> mComputerGrid;
 	std::array<std::array<sf::RectangleShape, CELL_WIDTH>, CELL_HEIGHT> mCompCells;
 	sf::CircleShape mShotIndicator;
+	sf::VertexArray mCross;
+	float lineLength = 50.0f;
+	float offset = lineLength / 2.0f * (float)std::cos(45.0f * PI / 180.0f);
 
 	std::unique_ptr<Fleet> mPlayerFleet;
 	std::unique_ptr<Fleet> mComputerFleet;

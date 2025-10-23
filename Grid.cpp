@@ -101,30 +101,30 @@ bool Grid::checkPlaceShip(int x, int y)
 
 void Grid::setHalo(char status)
 {
-	char status_to_set = (status == SHIP_CELL) ? HALO_CELL : SHOOT_CELL;
+	// Массивы смещений для 8 соседних ячеек (Moore neighborhood)
+	const int dx[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+	const int dy[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
+	const int num_neighbors = 8;
+	
+	// Определяем статус, который нужно установить
+	const char status_to_set = (status == SHIP_CELL) ? HALO_CELL : SHOOT_CELL;
 
 	for (int x = 1; x < CELL_WIDTH - 1; x++)
 	{
-		for (int y = 1; y < CELL_HEIGHT; y++)
+		for (int y = 1; y < CELL_HEIGHT - 1; y++)
 		{
 			if (mGridCells[x][y] == status)
-			{
-				if (mGridCells[x - 1][y - 1] == EMPTY_CELL)
-					mGridCells[x - 1][y - 1] = status_to_set;
-				if (mGridCells[x][y - 1] == EMPTY_CELL)
-					mGridCells[x][y - 1] = status_to_set;
-				if (mGridCells[x + 1][y - 1] == EMPTY_CELL)
-					mGridCells[x + 1][y - 1] = status_to_set;
-				if (mGridCells[x - 1][y] == EMPTY_CELL)
-					mGridCells[x - 1][y] = status_to_set;
-				if (mGridCells[x + 1][y] == EMPTY_CELL)
-					mGridCells[x + 1][y] = status_to_set;
-				if (mGridCells[x - 1][y + 1] == EMPTY_CELL)
-					mGridCells[x - 1][y + 1] = status_to_set;
-				if (mGridCells[x][y + 1] == EMPTY_CELL)
-					mGridCells[x][y + 1] = status_to_set;
-				if (mGridCells[x + 1][y + 1] == EMPTY_CELL)
-					mGridCells[x + 1][y + 1] = status_to_set;
+			{// Проверяем все 8 соседних ячеек
+				for (int i = 0; i < num_neighbors; i++)
+				{
+					int nx = x + dx[i];
+					int ny = y + dy[i];
+
+					if (mGridCells[nx][ny] == EMPTY_CELL || mGridCells[nx][ny] == HALO_CELL)
+					{
+						mGridCells[nx][ny] = status_to_set;
+					}
+				}
 			}
 		}
 	}
@@ -147,6 +147,7 @@ void Grid::woundedOrKilled(Ship* ship, int x, int y)
 		{
 			mGridCells[pos.x][pos.y] = KILLED_CELL;
 		}
+		ship->setShipState(ShipState::Sunk);
 		setHalo(KILLED_CELL);
 	}
 	else

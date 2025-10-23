@@ -17,8 +17,8 @@ void Deck::render(sf::RenderWindow& window)
 		mDeckShape.setFillColor(DECK_COLOR);
 	else if (mDeckState == DeckState::Wounded)
 		mDeckShape.setFillColor(DECK_WOUNDED_COLOR);
-	else if (mDeckState == DeckState::Killed)
-		mDeckShape.setFillColor(DECK_KILLED_COLOR);
+	//else if (mDeckState == DeckState::Killed)
+	//	mDeckShape.setFillColor(DECK_KILLED_COLOR);
 	
 	window.draw(mDeckShape);
 }

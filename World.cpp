@@ -4,6 +4,7 @@
 
 #include <iostream>		// for debug
 #include <memory>
+#include <cmath>
 
 
 World::World() :
@@ -21,6 +22,7 @@ World::World() :
 	mComputerGrid(std::make_unique<Grid>()),
 	mCompCells(),
 	mShotIndicator(),
+	mCross(),
 	mPlayerFleet(std::make_unique<Fleet>()),
 	mComputerFleet(std::make_unique<Fleet>()),
 	mTurn("")
@@ -49,8 +51,18 @@ void World::generateWorld()
 	mOceanGridSprite.setPosition(X_MARGIN, Y_MARGIN);
 	mRadarGridSprite.setPosition(X2_MARGIN, Y_MARGIN);
 
-	mShotIndicator.setRadius(DECK_SIZE / 4);
+	mShotIndicator.setRadius(DECK_SIZE / 6);
 	mShotIndicator.setFillColor(HALO_COLOR);
+	mShotIndicator.setOrigin(mShotIndicator.getRadius(), mShotIndicator.getRadius());
+
+	// cross for killed ship
+	mCross.setPrimitiveType(sf::Lines);
+	mCross.resize(4);
+	mCross[0].color = sf::Color::White;
+	mCross[1].color = sf::Color::White;
+	mCross[2].color = sf::Color::White;
+	mCross[3].color = sf::Color::White;
+
 
 	// random first turn
 	if (getRandNum(0, 1) == 0)
@@ -59,7 +71,7 @@ void World::generateWorld()
 		mTurn = "computer";
 
 	setupComputerFleet();
-	//mFleetPrepare->createFleetForPreparing();
+	mFleetPrepare->createFleetForPreparing();
 }
 
 void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
@@ -92,7 +104,8 @@ void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
 		else if (mGameState == GameState::Playing)
 		{
 			// Ход игрока
-			checkPlayerShot(mousePos);
+			if (mTurn == "player")
+				checkPlayerShot(mousePos);
 		}
 	}
 }
@@ -110,9 +123,10 @@ void World::update(sf::Time deltaTime)
 		// Игра
 		if (mGameState == GameState::Playing)
 		{
-			if (mTurn == "player")
+			if (mTurn == "computer")
 			{
 				//std::cout << "Player's turn\n";
+				checkComputerShot();
 			}
 			else
 			{
@@ -133,12 +147,13 @@ void World::render(sf::RenderWindow& window)
 	if (mGameState == GameState::Playing)
 	{
 		window.draw(mRadarGridSprite);
-		renderCells(window);
+		renderCells(window, "player", mPlayerGrid.get(), mCells);
+		renderCells(window, "computer", mComputerGrid.get(), mCompCells);
 	}
 	else if (mGameState == GameState::Preparing)
 	{
 		mFleetPrepare->render(window);
-		renderCells(window);
+		renderCells(window, "player", mPlayerGrid.get(), mCells);
 	}
 }
 
@@ -151,7 +166,7 @@ void World::setupCells()
 			mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
 				Y_MARGIN + 1 + row * DECK_SPACE);
 			mCells[col][row].setSize(sf::Vector2f(DECK_SPACE, DECK_SPACE));
-			// computer cells
+			// computer's cells
 			mCompCells[col][row].setPosition(X2_MARGIN + 1 + col * DECK_SPACE,
 				Y_MARGIN + 1 + row * DECK_SPACE);
 			mCompCells[col][row].setSize(sf::Vector2f(DECK_SPACE, DECK_SPACE));
@@ -159,48 +174,60 @@ void World::setupCells()
 	}
 }
 
-void World::renderCells(sf::RenderWindow& window)
+void World::renderCells(sf::RenderWindow& window, std::string side, Grid* grid,
+	std::array<std::array<sf::RectangleShape, CELL_WIDTH>, CELL_HEIGHT>& cells)
 {
-	for (size_t col = 0; col < CELL_WIDTH; col++)
+	float margin = 0;
+	if (side == "player")
 	{
-		for (size_t row = 0; row < CELL_HEIGHT; row++)
+		margin = X_MARGIN;
+	}
+	else if (side == "computer")
+	{
+		margin = X2_MARGIN;
+	}
+
+	for (size_t col = 1; col < CELL_WIDTH - 1; col++)
+	{
+		for (size_t row = 1; row < CELL_HEIGHT - 1; row++)
 		{
-			if (mPlayerGrid->getCell(col, row) == SHIP_CELL)
+			if (side == "player" /* && !winner */)	// TODO show computer's ship if it wins
 			{
-				//mCells[col][row].setPosition(X_MARGIN + 1 + col * DECK_SPACE,
-				//	Y_MARGIN + 1 + row * DECK_SPACE);
-				mCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
-				mCells[col][row].setFillColor(DECK_COLOR); 
-				window.draw(mCells[col][row]);
+				if (grid->getCell(col, row) == SHIP_CELL)
+				{
+					cells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
+					cells[col][row].setFillColor(DECK_COLOR);
+					window.draw(cells[col][row]);
+				}
 			}
-			if (mComputerGrid->getCell(col, row) == WOUNDED_CELL)
+			if (grid->getCell(col, row) == WOUNDED_CELL)
 			{
-				mCompCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
-				mCompCells[col][row].setFillColor(DECK_WOUNDED_COLOR);
-				window.draw(mCompCells[col][row]);
+				cells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
+				cells[col][row].setFillColor(DECK_WOUNDED_COLOR);
+				window.draw(cells[col][row]);
 			}
-			if (mComputerGrid->getCell(col, row) == KILLED_CELL)
+			if (grid->getCell(col, row) == KILLED_CELL)
 			{
-				mCompCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
-				mCompCells[col][row].setFillColor(DECK_KILLED_COLOR);
-				window.draw(mCompCells[col][row]);
+				cells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
+				cells[col][row].setFillColor(DECK_KILLED_COLOR);
+				window.draw(cells[col][row]);
+				// draw cross
+				mCross[0].position = sf::Vector2f(margin + 1 + col * DECK_SPACE - offset + DECK_SIZE / 2,
+					Y_MARGIN + 1 + row * DECK_SPACE - offset + DECK_SIZE / 2);
+				mCross[1].position = sf::Vector2f(margin + 1 + col * DECK_SPACE + offset + DECK_SIZE / 2,
+					Y_MARGIN + 1 + row * DECK_SPACE + offset + DECK_SIZE / 2);
+				mCross[2].position = sf::Vector2f(margin + 1 + col * DECK_SPACE - offset + DECK_SIZE / 2,
+					Y_MARGIN + 1 + row * DECK_SPACE + offset + DECK_SIZE / 2);
+				mCross[3].position = sf::Vector2f(margin + 1 + col * DECK_SPACE + offset + DECK_SIZE / 2,
+					Y_MARGIN + 1 + row * DECK_SPACE - offset + DECK_SIZE / 2);
+				window.draw(mCross);
 			}
-			if (mComputerGrid->getCell(col, row) == SHOOT_CELL)
+			if (grid->getCell(col, row) == SHOOT_CELL)
 			{
-				mShotIndicator.setPosition(X2_MARGIN + 1 + col * DECK_SPACE + DECK_SIZE / 4,
-					Y_MARGIN + 1 + row * DECK_SPACE + DECK_SIZE / 4);
+				mShotIndicator.setPosition(margin + 1 + col * DECK_SPACE + DECK_SIZE / 2,
+					Y_MARGIN + 1 + row * DECK_SPACE + DECK_SIZE / 2);
 				window.draw(mShotIndicator);
 			}
-			/*
-			if (mComputerGrid->getCell(col, row) == 'S')
-			{
-				//mCompCells[col][row].setPosition(X2_MARGIN + 1 + col * DECK_SPACE,
-				//	Y_MARGIN + 1 + row * DECK_SPACE);
-				mCompCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
-				mCompCells[col][row].setFillColor(DECK_COLOR);
-				window.draw(mCompCells[col][row]);
-			}
-			*/
 		}
 	}
 }
@@ -304,9 +331,32 @@ void World::checkPlayerShot(sf::Vector2i mousePos)
 				{
 					std::cout << "Miss!\n";
 					mComputerGrid->setCell(col, row, SHOOT_CELL);
-					// mTurn = "computer"; // switch turn to computer
+					mTurn = "computer"; // switch turn to computer
 				}
 			}
 		}
+	}
+}
+
+void World::checkComputerShot()
+{
+	//sf::sleep(sf::milliseconds(500)); // pause for better effect
+
+	// random shot
+	int x = getRandNum(1, 10);
+	int y = getRandNum(1, 10);
+	std::cout << "Computer shot at cell: (" << x << ", " << y << ")\n";
+	if (mPlayerGrid->checkShot(x, y))
+	{
+		// получить корабль по координатам
+		Ship* ship = mPlayerFleet->getShipAtPosition(sf::Vector2i(static_cast<int>(x), static_cast<int>(y)));
+		mPlayerGrid->woundedOrKilled(ship, x, y);
+		std::cout << "Hit!\n";
+	}
+	else
+	{
+		std::cout << "Miss!\n";
+		mPlayerGrid->setCell(x, y, SHOOT_CELL);
+		mTurn = "player"; // switch turn to player
 	}
 }
