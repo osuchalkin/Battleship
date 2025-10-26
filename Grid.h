@@ -21,6 +21,7 @@ class Grid
 public:
 	Grid();
 	void setDeck(int x, int y);
+	void setShipPositions(const std::vector<sf::Vector2i>& positions);
 	char getCell(int x, int y) const { return mGridCells[x][y]; }
 	void setCell(int x, int y, char status) { mGridCells[x][y] = status; }
 	int getDeckCount() const { return mDeckCount; }	

@@ -36,11 +36,20 @@ void Grid::setDeck(int x, int y)
 		mPositions.push_back({ x, y });
 		if (isNumberInSet(mDeckCount, "ShipReady"))
 		{
-			// создать корабль на сетке (тип и координаты) // TODO
+			// создать корабль на сетке (тип и координаты)
 			setHalo(SHIP_CELL);
 			mIsShipReady = true;
 		}
 	}
+}
+
+void Grid::setShipPositions(const std::vector<sf::Vector2i>& positions)
+{
+	for (const auto& pos : positions)
+	{
+		mGridCells[pos.x][pos.y] = SHIP_CELL;
+	}
+	setHalo(SHIP_CELL);
 }
 
 bool Grid::checkPlaceShip(int x, int y)
@@ -132,7 +141,7 @@ void Grid::setHalo(char status)
 
 bool Grid::checkShot(int x, int y)
 {
-	if (mGridCells[x][y] == SHIP_CELL)
+	if (mGridCells[x][y] == SHIP_CELL || mGridCells[x][y] == WOUNDED_CELL || mGridCells[x][y] == KILLED_CELL)
 		return true;
 	else 
 		return false;

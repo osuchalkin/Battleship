@@ -26,6 +26,7 @@ private:
 	void renderCells(sf::RenderWindow& window, std::string side, 
 		Grid* grid, std::array<std::array<sf::RectangleShape, CELL_WIDTH>, CELL_HEIGHT>& cells);
 	void setupComputerFleet();
+	void setComputerShip(TypeShip type);
 	void checkPlayerShot(sf::Vector2i mousePos);
 	void checkComputerShot();
 private:
