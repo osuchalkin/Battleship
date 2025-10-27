@@ -123,3 +123,21 @@ Ship* Fleet::getShipAtPosition(sf::Vector2i position)
 	}
 	return nullptr; // No ship found at the given position
 }
+
+void Fleet::updateFleet()
+{
+	// 1. Начинаем цикл с итератора.
+	for (auto it = mShips.begin(); it != mShips.end(); /* */)
+	{
+		if ((*it)->getShipState() == ShipState::Sunk)
+		{
+			// 2. Вызываем erase().
+			// erase() возвращает НОВЫЙ, валидный итератор на элемент, следующий за удаленным.
+			it = mShips.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}

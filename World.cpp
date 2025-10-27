@@ -115,26 +115,34 @@ void World::update(sf::Time deltaTime)
 	if (mGameState == GameState::Preparing)
 	{
 		// Расстановка кораблей
-		if (mFleetPrepare->mIsFleetPrepareReady())
+		if (mFleetPrepare->isFleetDead())
 			mGameState = GameState::Playing;
 	}
-	else
+	else if (mGameState == GameState::Playing)
 	{
-		// Игра
-		if (mGameState == GameState::Playing)
+		
+		if (mTurn == "computer")
 		{
-			if (mTurn == "computer")
+			// std::cout << "Computer's turn\n";
+			checkComputerShot();
+			if (mPlayerFleet->isFleetDead())
 			{
-				//std::cout << "Player's turn\n";
-				checkComputerShot();
+				std::cout << "Computer WINS!\n";
+				mGameState == GameState::GameOver;
 			}
-			else
-			{
-				//std::cout << "Computer's turn\n";
-			}
-		// else if (mGameState == GameState::GameOver)
-			// показать победителя, начать заново
 		}
+		else if (mTurn == "player")
+		{
+			// std::cout << "Player's turn\n";
+			if (mComputerFleet->isFleetDead())
+			{
+				std::cout << "Player WINS!\n";
+				mGameState == GameState::GameOver;
+			}
+		}
+
+	// else if (mGameState == GameState::GameOver)
+			// показать победителя, начать заново	
 	}
 }
 
@@ -290,14 +298,62 @@ void World::setupPlayerFleet(sf::Vector2i mousePos)
 
 void World::setupComputerFleet()
 {
-	setComputerShip(TypeShip::FourDeck);
-	setComputerShip(TypeShip::ThreeDeck);
-	setComputerShip(TypeShip::TwoDeck);
-	setComputerShip(TypeShip::OneDeck);
+	int setup = getRandNum(0, 5);
+	std::cout << "setup = " << setup << "\n";
+
+	setComputerShip(TypeShip::FourDeck, setup);
+	setComputerShip(TypeShip::ThreeDeck, setup);
+	setComputerShip(TypeShip::TwoDeck, setup);
+	setComputerShip(TypeShip::OneDeck, 0);	// OneDeck always random
 }
 
-void World::setComputerShip(TypeShip type) // Random choose valid positions on grid
+void World::setComputerShip(TypeShip type, int setup) // Random choose valid positions on grid
 {
+	// all grid
+	int widthStart = 1;
+	int heightStart = 1;
+	int widthEdge = CELL_WIDTH - 1;
+	int heightEdge = CELL_HEIGHT - 1;
+
+	switch (setup)
+	{
+	case 1:		// grid top
+		widthStart = 1;
+		heightStart = 1;
+		widthEdge = CELL_WIDTH - 1;
+		heightEdge = CELL_HEIGHT - 6;
+		break;
+	case 2:		// grid bottom
+		widthStart = 1;
+		heightStart = CELL_HEIGHT - 6;
+		widthEdge = CELL_WIDTH - 1;
+		heightEdge = CELL_HEIGHT - 1;
+		break;
+	case 3:		// grid left
+		widthStart = 1;
+		heightStart = 1;
+		widthEdge = CELL_WIDTH - 6;
+		heightEdge = CELL_HEIGHT - 1;
+		break;
+	case 4:		// grid right
+		widthStart = CELL_WIDTH - 6;
+		heightStart = 1;
+		widthEdge = CELL_WIDTH - 1;
+		heightEdge = CELL_HEIGHT - 1;
+		break;
+	case 5:		// grid edges
+		for (int col = 2; col < CELL_HEIGHT - 2; col++)
+		{
+			for (int row = 2; row < CELL_WIDTH - 2; row++)
+			{
+				mComputerGrid->setCell(col, row, HALO_CELL);
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
 	int ship = static_cast<int>(type);
 	int numberOfShips = 0;
 
@@ -325,16 +381,16 @@ void World::setComputerShip(TypeShip type) // Random choose valid positions on g
 	{
 		std::vector <std::vector<sf::Vector2i>> validPositions;
 
-		for (size_t col = 1; col < CELL_WIDTH - 1; col++)
+		for (size_t col = widthStart; col < widthEdge; col++)
 		{
-			for (size_t row = 1; row < CELL_HEIGHT - 1; row++)
+			for (size_t row = heightStart; row < heightEdge; row++)
 			{
 				// horizontal
 				bool isValid = true;
 				std::vector<sf::Vector2i> tempPositions;
 				for (size_t j = 0; j < ship; j++)
 				{
-					if (col + j < CELL_WIDTH - 1)
+					if (col + j < widthEdge)
 					{
 						if (mComputerGrid->getCell(col + j, row) != EMPTY_CELL)
 						{
@@ -359,7 +415,7 @@ void World::setComputerShip(TypeShip type) // Random choose valid positions on g
 				tempPositions.clear();
 				for (size_t j = 0; j < ship; j++)
 				{
-					if (row + j < CELL_HEIGHT - 1)
+					if (row + j < heightEdge)
 					{
 						if (mComputerGrid->getCell(col, row + j) != EMPTY_CELL)
 						{
@@ -387,6 +443,18 @@ void World::setComputerShip(TypeShip type) // Random choose valid positions on g
 		mComputerGrid->setShipPositions(position);
 		mComputerFleet->createShip(position);
 	}
+
+	// return to EMPTY if setup == grid edges 
+	if (setup == 5)
+	{
+		for (int col = 3; col < CELL_HEIGHT - 3; col++)
+		{
+			for (int row = 3; row < CELL_WIDTH - 3; row++)
+			{
+				mComputerGrid->setCell(col, row, EMPTY_CELL);
+			}
+		}
+	}
 }
 
 void World::checkPlayerShot(sf::Vector2i mousePos)
@@ -409,6 +477,7 @@ void World::checkPlayerShot(sf::Vector2i mousePos)
 					// получить корабль по координатам
 					Ship* ship = mComputerFleet->getShipAtPosition(sf::Vector2i(static_cast<int>(col), static_cast<int>(row)));
 					mComputerGrid->woundedOrKilled(ship, col, row);
+					mComputerFleet->updateFleet();
 					std::cout << "Hit!\n";
 				}
 				else
@@ -426,20 +495,20 @@ void World::checkComputerShot()
 {
 	//sf::sleep(sf::milliseconds(500)); // pause for better effect
 	std::vector <sf::Vector2i> validCells;
-	for (size_t col = 1; col < CELL_WIDTH - 1; col++)
+	for (int col = 1; col < CELL_WIDTH - 1; col++)
 	{
-		for (size_t row = 1; row < CELL_HEIGHT; row++)
+		for (int row = 1; row < CELL_HEIGHT - 1; row++)
 		{
-			if (mPlayerGrid->getCell(static_cast<int>(col), static_cast<int>(row)) != SHOOT_CELL && 
-				mPlayerGrid->getCell(static_cast<int>(col), static_cast<int>(row)) != WOUNDED_CELL &&
-				mPlayerGrid->getCell(static_cast<int>(col), static_cast<int>(row)) != KILLED_CELL)
+			if (mPlayerGrid->getCell(col, row) != SHOOT_CELL && 
+				mPlayerGrid->getCell(col, row) != WOUNDED_CELL &&
+				mPlayerGrid->getCell(col, row) != KILLED_CELL)
 			{
-				validCells.push_back({ static_cast<int>(col), static_cast<int>(row) });
+				validCells.push_back({ col, row });
 			}
 		}
 	}
 
-	// random shot
+	// random shot - if (validCells.size() != 0) // пока нет победителя
 	int index = getRandNum(0, validCells.size() - 1);
 	sf::Vector2i position = validCells[index];
 
@@ -449,6 +518,7 @@ void World::checkComputerShot()
 		// получить корабль по координатам
 		Ship* ship = mPlayerFleet->getShipAtPosition(position);
 		mPlayerGrid->woundedOrKilled(ship, position.x, position.y);
+		mPlayerFleet->updateFleet();
 		std::cout << "Hit!\n";
 	}
 	else
