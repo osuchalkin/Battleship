@@ -29,6 +29,8 @@ private:
 	void setComputerShip(TypeShip type, int setup);
 	void checkPlayerShot(sf::Vector2i mousePos);
 	void checkComputerShot();
+	sf::Vector2i computerShootRandom();
+	sf::Vector2i computerSeekShip();
 private:
 	enum class GameState
 	{
@@ -62,5 +64,8 @@ private:
 	std::unique_ptr<Fleet> mComputerFleet;
 
 	std::string mTurn; // "player" or "computer"
+
+	bool mShipWounded;	// for computer shot
+	std::vector<sf::Vector2i> mWoundedCells;
 };
 

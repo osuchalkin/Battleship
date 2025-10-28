@@ -25,7 +25,9 @@ World::World() :
 	mCross(),
 	mPlayerFleet(std::make_unique<Fleet>()),
 	mComputerFleet(std::make_unique<Fleet>()),
-	mTurn("")
+	mTurn(""),
+	mShipWounded(false),
+	mWoundedCells()
 {
 	mt.seed(std::random_device{}());
 
@@ -437,7 +439,9 @@ void World::setComputerShip(TypeShip type, int setup) // Random choose valid pos
 					validPositions.push_back(tempPositions);
 			}
 		}
-		int index = getRandNum(0, validPositions.size() - 1);
+		int index = 0;
+		if (validPositions.size() > 1)
+			index = getRandNum(0, validPositions.size() - 1);
 		std::vector<sf::Vector2i> position = validPositions[index];
 
 		mComputerGrid->setShipPositions(position);
@@ -494,23 +498,15 @@ void World::checkPlayerShot(sf::Vector2i mousePos)
 void World::checkComputerShot()
 {
 	//sf::sleep(sf::milliseconds(500)); // pause for better effect
-	std::vector <sf::Vector2i> validCells;
-	for (int col = 1; col < CELL_WIDTH - 1; col++)
-	{
-		for (int row = 1; row < CELL_HEIGHT - 1; row++)
-		{
-			if (mPlayerGrid->getCell(col, row) != SHOOT_CELL && 
-				mPlayerGrid->getCell(col, row) != WOUNDED_CELL &&
-				mPlayerGrid->getCell(col, row) != KILLED_CELL)
-			{
-				validCells.push_back({ col, row });
-			}
-		}
-	}
 
-	// random shot - if (validCells.size() != 0) // пока нет победителя
-	int index = getRandNum(0, validCells.size() - 1);
-	sf::Vector2i position = validCells[index];
+	// if (validCells.size() != 0) // пока нет победителя
+
+	sf::Vector2i position;
+	if (!mShipWounded)
+		position = computerShootRandom();
+	else
+		position = computerSeekShip();
+		
 
 	std::cout << "Computer shot at cell: (" << position.x << ", " << position.y << ")\n";
 	if (mPlayerGrid->checkShot(position.x, position.y))
@@ -518,7 +514,17 @@ void World::checkComputerShot()
 		// получить корабль по координатам
 		Ship* ship = mPlayerFleet->getShipAtPosition(position);
 		mPlayerGrid->woundedOrKilled(ship, position.x, position.y);
-		mPlayerFleet->updateFleet();
+		if (mPlayerGrid->getCell(position.x, position.y) == KILLED_CELL)
+		{
+			mPlayerFleet->updateFleet();
+			mShipWounded = false;
+		}
+		else if (mPlayerGrid->getCell(position.x, position.y) == WOUNDED_CELL)
+		{
+			mShipWounded = true;
+			mWoundedCells.push_back({ position.x, position.y });
+		}
+
 		std::cout << "Hit!\n";
 	}
 	else
@@ -527,4 +533,60 @@ void World::checkComputerShot()
 		mPlayerGrid->setCell(position.x, position.y, SHOOT_CELL);
 		mTurn = "player"; // switch turn to player
 	}
+}
+
+sf::Vector2i World::computerShootRandom()
+{
+	// get valid cells
+	std::vector <sf::Vector2i> validCells;
+	for (int col = 1; col < CELL_WIDTH - 1; col++)
+	{
+		for (int row = 1; row < CELL_HEIGHT - 1; row++)
+		{
+			if (mPlayerGrid->getCell(col, row) != SHOOT_CELL &&
+				mPlayerGrid->getCell(col, row) != WOUNDED_CELL &&
+				mPlayerGrid->getCell(col, row) != KILLED_CELL)
+			{
+				validCells.push_back({ col, row });
+			}
+		}
+	}
+
+	int index = getRandNum(0, validCells.size() - 1);
+
+	return validCells[index];
+}
+
+sf::Vector2i World::computerSeekShip()
+{
+	std::vector<sf::Vector2i> validCells;
+	const int dx[] = { -1, 1, 0, 0 };
+	const int dy[] = { 0, 0, -1, 1 };
+	const int num_neighbors = 4;
+	
+	int x = mWoundedCells[0].x;
+	int y = mWoundedCells[0].y;
+
+	for (int i = 0; i < num_neighbors; i++)
+	{
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		bool in_bounds = (nx >= 1 && nx < CELL_WIDTH - 1 &&
+			ny >= 1 && ny < CELL_HEIGHT - 1);
+
+		if (in_bounds)
+		{
+			if (mPlayerGrid->getCell(nx, ny) == EMPTY_CELL || mPlayerGrid->getCell(nx, ny) == HALO_CELL ||
+				mPlayerGrid->getCell(nx, ny) == SHIP_CELL)
+			{
+				validCells.push_back({ nx, ny });
+			}
+		}
+	}
+	int index = 0; 
+	if (validCells.size() > 1)
+		index = getRandNum(0, validCells.size() - 1);
+
+	return validCells[index];
 }
