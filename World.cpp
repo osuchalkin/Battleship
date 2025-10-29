@@ -499,7 +499,9 @@ void World::checkComputerShot()
 {
 	//sf::sleep(sf::milliseconds(500)); // pause for better effect
 
-	// if (validCells.size() != 0) // пока нет победителя
+	//  пока нет победителя
+	if (mPlayerFleet->isFleetDead())
+		return;
 
 	sf::Vector2i position;
 	if (!mShipWounded)
@@ -518,6 +520,7 @@ void World::checkComputerShot()
 		{
 			mPlayerFleet->updateFleet();
 			mShipWounded = false;
+			mWoundedCells.clear();
 		}
 		else if (mPlayerGrid->getCell(position.x, position.y) == WOUNDED_CELL)
 		{
@@ -552,7 +555,9 @@ sf::Vector2i World::computerShootRandom()
 		}
 	}
 
-	int index = getRandNum(0, validCells.size() - 1);
+	int index = 0;
+	if (validCells.size() > 1)
+		index = getRandNum(0, validCells.size() - 1);
 
 	return validCells[index];
 }
@@ -560,30 +565,110 @@ sf::Vector2i World::computerShootRandom()
 sf::Vector2i World::computerSeekShip()
 {
 	std::vector<sf::Vector2i> validCells;
+
+	int size = mWoundedCells.size();
+
 	const int dx[] = { -1, 1, 0, 0 };
 	const int dy[] = { 0, 0, -1, 1 };
 	const int num_neighbors = 4;
-	
+
 	int x = mWoundedCells[0].x;
 	int y = mWoundedCells[0].y;
 
-	for (int i = 0; i < num_neighbors; i++)
+	switch (size)
 	{
-		int nx = x + dx[i];
-		int ny = y + dy[i];
-
-		bool in_bounds = (nx >= 1 && nx < CELL_WIDTH - 1 &&
-			ny >= 1 && ny < CELL_HEIGHT - 1);
-
-		if (in_bounds)
+	case 1:
+		for (int i = 0; i < num_neighbors; i++)
 		{
-			if (mPlayerGrid->getCell(nx, ny) == EMPTY_CELL || mPlayerGrid->getCell(nx, ny) == HALO_CELL ||
-				mPlayerGrid->getCell(nx, ny) == SHIP_CELL)
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			bool in_bounds = (nx >= 1 && nx < CELL_WIDTH - 1 &&
+				ny >= 1 && ny < CELL_HEIGHT - 1);
+			if (in_bounds)
 			{
-				validCells.push_back({ nx, ny });
+				if (mPlayerGrid->getCell(nx, ny) == EMPTY_CELL || mPlayerGrid->getCell(nx, ny) == HALO_CELL ||
+					mPlayerGrid->getCell(nx, ny) == SHIP_CELL)
+				{
+					validCells.push_back({ nx, ny });
+				}
 			}
 		}
+		break;
+	case 2: case 3:
+		if (mWoundedCells[0].x == mWoundedCells[1].x) // vertical
+		{
+			// find min y and max y
+			int y1 = mWoundedCells[0].y;
+			int y2 = mWoundedCells[0].y;
+			for (size_t i = 1; i < mWoundedCells.size(); ++i)
+			{
+				const sf::Vector2i& cell = mWoundedCells[i];
+				y1 = std::min(y1, cell.y);
+				y2 = std::max(y2, cell.y);
+			}
+			y1--;
+			y2++;
+			
+			// check valid cells
+			bool in_bounds = (y1 >= 1 && y1 < CELL_HEIGHT - 1);
+			if (in_bounds)
+			{
+				if (mPlayerGrid->getCell(x, y1) == EMPTY_CELL || mPlayerGrid->getCell(x, y1) == HALO_CELL ||
+					mPlayerGrid->getCell(x, y1) == SHIP_CELL)
+				{
+					validCells.push_back({ x, y1 });
+				}
+			}
+			in_bounds = (y2 >= 1 && y2 < CELL_HEIGHT - 1);
+			if (in_bounds)
+			{
+				if (mPlayerGrid->getCell(x, y2) == EMPTY_CELL || mPlayerGrid->getCell(x, y2) == HALO_CELL ||
+					mPlayerGrid->getCell(x, y2) == SHIP_CELL)
+				{
+					validCells.push_back({ x, y2 });
+				}
+			}
+		}
+		else if (mWoundedCells[0].y == mWoundedCells[1].y) // horizontal
+		{
+			// find min x and max y
+			int x1 = mWoundedCells[0].x;
+			int x2 = mWoundedCells[0].x;
+			for (size_t i = 1; i < mWoundedCells.size(); ++i)
+			{
+				const sf::Vector2i& cell = mWoundedCells[i];
+				x1 = std::min(x1, cell.x);
+				x2 = std::max(x2, cell.x);
+			}
+			x1--;
+			x2++;
+
+			// check valid cells
+			bool in_bounds = (x1 >= 1 && x1 < CELL_WIDTH - 1);
+			if (in_bounds)
+			{
+				if (mPlayerGrid->getCell(x1, y) == EMPTY_CELL || mPlayerGrid->getCell(x1, y) == HALO_CELL ||
+					mPlayerGrid->getCell(x1, y) == SHIP_CELL)
+				{
+					validCells.push_back({ x1, y });
+				}
+			}
+			in_bounds = (x2 >= 1 && x2 < CELL_WIDTH - 1);
+			if (in_bounds)
+			{
+				if (mPlayerGrid->getCell(x2, y) == EMPTY_CELL || mPlayerGrid->getCell(x2, y) == HALO_CELL ||
+					mPlayerGrid->getCell(x2, y) == SHIP_CELL)
+				{
+					validCells.push_back({ x2, y });
+				}
+			}
+		}
+		break;
+	default:
+		break;
 	}
+
+	// choose random valid cell
 	int index = 0; 
 	if (validCells.size() > 1)
 		index = getRandNum(0, validCells.size() - 1);
