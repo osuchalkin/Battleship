@@ -64,6 +64,7 @@ private:
 	std::unique_ptr<Fleet> mComputerFleet;
 
 	std::string mTurn; // "player" or "computer"
+	std::string mWinner;
 
 	bool mShipWounded;	// for computer shot
 	std::vector<sf::Vector2i> mWoundedCells;

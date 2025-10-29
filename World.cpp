@@ -26,6 +26,7 @@ World::World() :
 	mPlayerFleet(std::make_unique<Fleet>()),
 	mComputerFleet(std::make_unique<Fleet>()),
 	mTurn(""),
+	mWinner(""),
 	mShipWounded(false),
 	mWoundedCells()
 {
@@ -130,7 +131,8 @@ void World::update(sf::Time deltaTime)
 			if (mPlayerFleet->isFleetDead())
 			{
 				std::cout << "Computer WINS!\n";
-				mGameState == GameState::GameOver;
+				mWinner = "computer";
+				//mGameState = GameState::GameOver;
 			}
 		}
 		else if (mTurn == "player")
@@ -139,12 +141,13 @@ void World::update(sf::Time deltaTime)
 			if (mComputerFleet->isFleetDead())
 			{
 				std::cout << "Player WINS!\n";
-				mGameState == GameState::GameOver;
+				mWinner = "player";
+				//mGameState = GameState::GameOver;
 			}
 		}
 
-	// else if (mGameState == GameState::GameOver)
-			// показать победителя, начать заново	
+	else if (mGameState == GameState::GameOver)
+			std::cout << "Game Over\n";
 	}
 }
 
@@ -201,15 +204,17 @@ void World::renderCells(sf::RenderWindow& window, std::string side, Grid* grid,
 	{
 		for (size_t row = 1; row < CELL_HEIGHT - 1; row++)
 		{
-			//if (side == "player" /* && !winner */)	// TODO show computer's ship if it wins
-			//{
+			if (side == "player" || (side == "computer" && mWinner == "computer"))	// show computer's ship if it wins
+			{
 				if (grid->getCell(col, row) == SHIP_CELL)
 				{
 					cells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
 					cells[col][row].setFillColor(DECK_COLOR);
 					window.draw(cells[col][row]);
 				}
-			//}
+			}
+			
+
 			if (grid->getCell(col, row) == WOUNDED_CELL)
 			{
 				cells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
@@ -306,7 +311,7 @@ void World::setupComputerFleet()
 
 	do
 	{
-		// clenar computer grid and fleet
+		// clean computer grid and fleet
 		mComputerGrid = std::make_unique<Grid>();
 		mComputerFleet = std::make_unique<Fleet>();
 
