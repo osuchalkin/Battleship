@@ -19,6 +19,7 @@ Grid::Grid() :
 	mGridCells(),
 	mDeckCount(0)
 {
+	//clearGrid();
 	for (auto& row : mGridCells)
 	{
 		row.fill(EMPTY_CELL);
