@@ -6,6 +6,7 @@
 #include <memory>
 #include <cmath>
 
+// TODO : refactor: create class BasePlayer with derived Player and Computer classes
 
 World::World() :
 	mOceanGridTexture(),
@@ -381,88 +382,17 @@ bool World::setComputerShip(TypeShip type, int setup) // Random choose valid pos
 	}
 
 	int ship = static_cast<int>(type);
-	int numberOfShips = 0;
-
-	switch (ship)
-	{
-	case 4:
-		// FourDeck ship
-		numberOfShips = 1;
-		break;
-	case 3:
-		// ThreeDeck ship
-		numberOfShips = 2;
-		break;
-	case 2:
-		// TwoDeck ship
-		numberOfShips = 3;
-		break;
-	case 1:
-		// OneDeck ship
-		numberOfShips = 4;
-		break;
-	}
+	int numberOfShips = mComputerFleet->getNumberOfShips(type);
+	// condition to check occupied cells
+	auto computerCondition = [&](int c, int r) -> bool {
+		return mComputerGrid->getCell(c, r) != EMPTY_CELL; };
 
 	for (size_t i = 0; i < numberOfShips; i++)
 	{
-		std::vector <std::vector<sf::Vector2i>> validPositions;
+		std::vector <std::vector<sf::Vector2i>> validPositions = mComputerGrid->getValidPositions(
+			computerCondition, ship,
+			widthStart, widthEdge, heightStart, heightEdge);
 
-		for (size_t col = widthStart; col < widthEdge; col++)
-		{
-			for (size_t row = heightStart; row < heightEdge; row++)
-			{
-				// horizontal
-				bool isValid = true;
-				std::vector<sf::Vector2i> tempPositions;
-				for (size_t j = 0; j < ship; j++)
-				{
-					if (col + j < widthEdge)
-					{
-						if (mComputerGrid->getCell(col + j, row) != EMPTY_CELL)
-						{
-							isValid = false;
-							break;
-						}
-						else
-						{
-							tempPositions.push_back(sf::Vector2i(static_cast<int>(col + j), static_cast<int>(row)));
-						}
-					}
-					else
-					{
-						isValid = false;
-						break;
-					}
-				}
-				if (isValid)
-					validPositions.push_back(tempPositions);
-				// vertical
-				isValid = true;
-				tempPositions.clear();
-				for (size_t j = 0; j < ship; j++)
-				{
-					if (row + j < heightEdge)
-					{
-						if (mComputerGrid->getCell(col, row + j) != EMPTY_CELL)
-						{
-							isValid = false;
-							break;
-						}
-						else
-						{
-							tempPositions.push_back(sf::Vector2i(static_cast<int>(col), static_cast<int>(row + j)));
-						}
-					}
-					else
-					{
-						isValid = false;
-						break;
-					}
-				}
-				if (isValid)
-					validPositions.push_back(tempPositions);
-			}
-		}
 		// no valid positions
 		if (validPositions.empty())
 		{
@@ -532,10 +462,12 @@ void World::checkComputerShot()
 
 	sf::Vector2i position;
 	if (!mShipWounded)
-		position = computerShootRandom();
+		position = computerShoot(); // computerShootRandom();
 	else
 		position = computerSeekShip();
 		
+	std::cout << "Computer shoots at: (" << position.x << ", " << position.y << ")\n";
+	std::cout << "Cell: " << mPlayerGrid->getCell(position.x, position.y) << "\n";
 
 	if (mPlayerGrid->checkShot(position.x, position.y))
 	{
@@ -563,6 +495,7 @@ void World::checkComputerShot()
 
 sf::Vector2i World::computerShootRandom()
 {
+	/*
 	// get valid cells
 	std::vector <sf::Vector2i> validCells;
 	for (int col = 1; col < CELL_WIDTH - 1; col++)
@@ -583,6 +516,8 @@ sf::Vector2i World::computerShootRandom()
 		index = getRandNum(0, validCells.size() - 1);
 
 	return validCells[index];
+	*/
+	return mPlayerGrid->getRandomPositionForShot();
 }
 
 sf::Vector2i World::computerShoot()
@@ -590,19 +525,117 @@ sf::Vector2i World::computerShoot()
 	if (mPlayerFleet->isTypeShipExist(TypeShip::FourDeck))
 	{
 		// shoot FourDeck ship
+		return getCellForShot(TypeShip::FourDeck);
 	}
 	else if (mPlayerFleet->isTypeShipExist(TypeShip::ThreeDeck))
 	{
 		// shoot ThreeDeck ship
+		return getCellForShot(TypeShip::ThreeDeck);
 	}
 	else if (mPlayerFleet->isTypeShipExist(TypeShip::TwoDeck))
 	{
 		// shoot TwoDeck ship
+		return getCellForShot(TypeShip::TwoDeck);
 	}
 	else if (mPlayerFleet->isTypeShipExist(TypeShip::OneDeck))
 	{
 		// shoot OneDeck ship
+		return computerShootRandom();
 	}
+}
+
+sf::Vector2i World::getCellForShot(TypeShip type)
+{
+	int numDeck = static_cast<int>(type);
+	
+	// condition to check occupied cells
+	auto playerCondition = [&](int c, int r) -> bool {
+		// Используем захваченные поля mPlayerGrid, SHOOT_CELL, WOUNDED_CELL, KILLED_CELL
+		return mPlayerGrid->getCell(c, r) != SHOOT_CELL &&
+			mPlayerGrid->getCell(c, r) != WOUNDED_CELL &&
+			mPlayerGrid->getCell(c, r) != KILLED_CELL;
+		};
+
+	std::vector <std::vector<sf::Vector2i>> validPositions = mPlayerGrid->getValidPositions(
+		playerCondition, numDeck);
+
+	/*
+	for (size_t col = 1; col < CELL_WIDTH - 1; col++)
+	{
+		for (size_t row = 1; row < CELL_HEIGHT - 1; row++)
+		{
+			// horizontal
+			bool isValid = true;
+			std::vector<sf::Vector2i> tempPositions;
+			for (size_t j = 0; j < numDeck; j++)
+			{
+				if (col + j < CELL_WIDTH - 1)
+				{
+					if (mPlayerGrid->getCell(col + j, row) != EMPTY_CELL &&
+						mPlayerGrid->getCell(col + j, row) != HALO_CELL &&
+						mPlayerGrid->getCell(col + j, row) != SHIP_CELL)
+					{
+						isValid = false;
+						break;
+					}
+					else
+					{
+						tempPositions.push_back(sf::Vector2i(static_cast<int>(col + j), static_cast<int>(row)));
+					}
+				}
+				else
+				{
+					isValid = false;
+					break;
+				}
+			}
+			if (isValid)
+				validPositions.push_back(tempPositions);
+			// vertical
+			isValid = true;
+			tempPositions.clear();
+			for (size_t j = 0; j < numDeck; j++)
+			{
+				if (row + j < CELL_HEIGHT - 1)
+				{
+					if (mPlayerGrid->getCell(col, row + j) != EMPTY_CELL &&
+						mPlayerGrid->getCell(col, row + j) != HALO_CELL &&
+						mPlayerGrid->getCell(col, row + j) != SHIP_CELL)
+					{
+						isValid = false;
+						break;
+					}
+					else
+					{
+						tempPositions.push_back(sf::Vector2i(static_cast<int>(col), static_cast<int>(row + j)));
+					}
+				}
+				else
+				{
+					isValid = false;
+					break;
+				}
+			}
+			if (isValid)
+				validPositions.push_back(tempPositions);
+		}
+	}
+	*/
+
+	int index = 0;
+	if (validPositions.size() > 1)
+		index = getRandNum(0, validPositions.size() - 1);
+	std::cout << "Index = " << index << "\n";
+	if (validPositions.empty())
+	{
+		std::cout << "validPositions is Empty";
+	}
+	std::vector<sf::Vector2i> position = validPositions[index];
+	int index2 = 0;
+	if (position.size() > 1)
+		index2 = getRandNum(0, position.size() - 1);
+	
+	return position[index2];
 }
 
 sf::Vector2i World::computerSeekShip()

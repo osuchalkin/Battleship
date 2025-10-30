@@ -151,3 +151,19 @@ bool Fleet::isTypeShipExist(TypeShip type)
 	}
 	return false;
 }
+
+int Fleet::getNumberOfShips(TypeShip type)
+{
+	int ship = static_cast<int>(type);
+	switch (ship)
+	{
+	case 1:
+		return 4;
+	case 2:
+		return 3;
+	case 3:
+		return 2;
+	case 4:
+		return 1;
+	}
+}

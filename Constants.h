@@ -67,4 +67,4 @@ constexpr char SHIP_CELL = 'S';
 constexpr char HALO_CELL = 'H';
 constexpr char WOUNDED_CELL = 'W';
 constexpr char KILLED_CELL = 'K';
-constexpr char SHOOT_CELL = 'X';	// ?
+constexpr char SHOOT_CELL = 'X';

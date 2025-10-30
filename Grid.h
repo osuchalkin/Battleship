@@ -7,6 +7,7 @@
 #include <vector>
 #include <unordered_set>
 #include <map>
+#include <functional>
 
 using DeckSet = std::unordered_set<int>;
 static const std::map<std::string, DeckSet> mDeckSet = {
@@ -15,6 +16,8 @@ static const std::map<std::string, DeckSet> mDeckSet = {
 		{"SetB", {1, 5, 8, 11, 13, 15}},
 		{"SetC", {2, 3, 6, 9}}
 };
+
+using ConditionPredicate = std::function<bool(int col, int row)>;
 
 class Grid
 {
@@ -27,6 +30,11 @@ public:
 	int getDeckCount() const { return mDeckCount; }	
 	bool checkShot(int x, int y);
 	void woundedOrKilled(Ship* ship, int x, int y);
+	sf::Vector2i getRandomPositionForShot();
+	// sf::Vector2i getCellForShot(TypeShip type);
+	std::vector <std::vector<sf::Vector2i>> getValidPositions(ConditionPredicate checkCondition, int ship,
+		int colStart = 1, int colFinish = CELL_WIDTH - 1,
+		int rowStart = 1, int rowFinish = CELL_HEIGHT - 1);
 public:
 	bool mIsShipReady;
 	std::vector<sf::Vector2i> mPositions;

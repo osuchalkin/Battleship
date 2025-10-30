@@ -31,6 +31,7 @@ private:
 	void checkComputerShot();
 	sf::Vector2i computerShootRandom();
 	sf::Vector2i computerShoot();
+	sf::Vector2i getCellForShot(TypeShip type);
 	sf::Vector2i computerSeekShip();
 private:
 	enum class GameState

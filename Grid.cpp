@@ -165,3 +165,169 @@ void Grid::woundedOrKilled(Ship* ship, int x, int y)
 		mGridCells[x][y] = WOUNDED_CELL;
 	}
 }
+
+sf::Vector2i Grid::getRandomPositionForShot()
+{
+	// get valid cells
+	std::vector <sf::Vector2i> validCells;
+	for (int col = 1; col < CELL_WIDTH - 1; col++)
+	{
+		for (int row = 1; row < CELL_HEIGHT - 1; row++)
+		{
+			if (mGridCells[col][row] != SHOOT_CELL &&
+				mGridCells[col][row] != WOUNDED_CELL &&
+				mGridCells[col][row] != KILLED_CELL)
+			{
+				validCells.push_back({ col, row });
+			}
+		}
+	}
+	int index = 0;
+	if (validCells.size() > 1)
+		index = rand() % validCells.size();
+	return validCells[index];
+}
+/*
+sf::Vector2i Grid::getCellForShot(TypeShip type)
+{
+	
+	std::vector<std::vector<sf::Vector2i>> validPositions;
+	int numDeck = static_cast<int>(type);
+	// find valid positions for ship type
+	for (int col = 1; col < CELL_WIDTH - 1; col++)
+	{
+		for (int row = 1; row < CELL_HEIGHT - 1; row++)
+		{
+			// horizontal
+			bool isValid = true;
+			std::vector<sf::Vector2i> tempPositions;
+			for (size_t j = 0; j < numDeck; j++)
+			{
+				if (row + j < CELL_HEIGHT - 1)
+				{
+					if (mGridCells[col][row + j] != EMPTY_CELL &&
+						mGridCells[col][row + j] != HALO_CELL &&
+						mGridCells[col][row + j] != SHIP_CELL)
+					{
+						isValid = false;
+						break;
+					}
+					else
+					{
+						tempPositions.push_back(sf::Vector2i(static_cast<int>(col), static_cast<int>(row + j)));
+					}
+				}
+				else
+				{
+					isValid = false;
+					break;
+				}
+			}
+			if (isValid)
+				validPositions.push_back(tempPositions);
+			// vertical
+			isValid = true;
+			tempPositions.clear();
+			for (size_t j = 0; j < numDeck; j++)
+			{
+				if (col + j < CELL_WIDTH - 1)
+				{
+					if (mGridCells[col + j][row] != EMPTY_CELL &&
+						mGridCells[col + j][row] != HALO_CELL &&
+						mGridCells[col + j][row] != SHIP_CELL)
+					{
+						isValid = false;
+						break;
+					}
+					else
+					{
+						tempPositions.push_back(sf::Vector2i(static_cast<int>(col + j), static_cast<int>(row)));
+					}
+				}
+				else
+				{
+					isValid = false;
+					break;
+				}
+			}
+			if (isValid)
+				validPositions.push_back(tempPositions);
+		}
+	}
+	int index = 0;
+	if (validPositions.size() > 1)
+		index = rand() % validPositions.size();
+	std::vector<sf::Vector2i> position = validPositions[index];
+	int index2 = 0;
+	if (position.size() > 1)
+		index2 = getRandNum(0, position.size() - 1);
+
+	return position[index2];
+	
+}
+*/
+std::vector <std::vector<sf::Vector2i>> Grid::getValidPositions(ConditionPredicate checkCondition, int ship,
+	int colStart, int colFinish, int rowStart, int rowFinish)
+{
+	std::vector<std::vector<sf::Vector2i>> validPositions;
+	// find valid positions for ship type
+	for (int col = colStart; col < colFinish; col++)
+	{
+		for (int row = rowStart; row < rowFinish; row++)
+		{
+			// horizontal
+			bool isValid = true;
+			std::vector<sf::Vector2i> tempPositions;
+			for (size_t j = 0; j < ship; j++)
+			{
+				if (row + j < rowFinish)
+				{
+					//if (mGridCells[col][row + j] != EMPTY_CELL)
+					if (checkCondition(col, row + j))
+					{
+						isValid = false;
+						break;
+					}
+					else
+					{
+						tempPositions.push_back(sf::Vector2i(static_cast<int>(col), static_cast<int>(row + j)));
+					}
+				}
+				else
+				{
+					isValid = false;
+					break;
+				}
+			}
+			if (isValid)
+				validPositions.push_back(tempPositions);
+			// vertical
+			isValid = true;
+			tempPositions.clear();
+			for (size_t j = 0; j < ship; j++)
+			{
+				if (col + j < colFinish)
+				{
+					if (checkCondition(col + j, row))
+					// if (mGridCells[col + j][row] != EMPTY_CELL)
+					{
+						isValid = false;
+						break;
+					}
+					else
+					{
+						tempPositions.push_back(sf::Vector2i(static_cast<int>(col + j), static_cast<int>(row)));
+					}
+				}
+				else
+				{
+					isValid = false;
+					break;
+				}
+			}
+			if (isValid)
+				validPositions.push_back(tempPositions);
+		}
+	}
+	return validPositions;
+}
