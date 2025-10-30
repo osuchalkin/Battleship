@@ -30,6 +30,7 @@ private:
 	void checkPlayerShot(sf::Vector2i mousePos);
 	void checkComputerShot();
 	sf::Vector2i computerShootRandom();
+	sf::Vector2i computerShoot();
 	sf::Vector2i computerSeekShip();
 private:
 	enum class GameState

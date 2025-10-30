@@ -12,7 +12,7 @@ public:
 	Ship(TypeShip type, std::vector<sf::Vector2f>& positions, std::vector<DeckState>& states);
 	void render(sf::RenderWindow& window);
 	std::vector<sf::Vector2f> getPositions() const { return mPositions; }
-	//TypeShip getType() const { return mType; }
+	TypeShip getType() const { return mType; }
 	void registerHit(const sf::Vector2f& position);
 	bool isSunk() const;
 	void setShipState(ShipState state) { mShipState = state; }

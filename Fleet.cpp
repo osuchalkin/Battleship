@@ -141,3 +141,13 @@ void Fleet::updateFleet()
 		}
 	}
 }
+
+bool Fleet::isTypeShipExist(TypeShip type)
+{
+	for (const auto& ship : mShips)
+	{
+		if (ship->getType() == type)
+			return true;
+	}
+	return false;
+}

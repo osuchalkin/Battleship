@@ -18,6 +18,7 @@ public:
 	void updateFleet();
 	bool isFleetDead() { return mShips.empty(); };
 	//void clearFleet() { mShips.clear(); }
+	bool isTypeShipExist(TypeShip type);
 private:
 	std::vector<std::shared_ptr<Ship>> mShips;
 private:

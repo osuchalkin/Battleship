@@ -585,6 +585,26 @@ sf::Vector2i World::computerShootRandom()
 	return validCells[index];
 }
 
+sf::Vector2i World::computerShoot()
+{
+	if (mPlayerFleet->isTypeShipExist(TypeShip::FourDeck))
+	{
+		// shoot FourDeck ship
+	}
+	else if (mPlayerFleet->isTypeShipExist(TypeShip::ThreeDeck))
+	{
+		// shoot ThreeDeck ship
+	}
+	else if (mPlayerFleet->isTypeShipExist(TypeShip::TwoDeck))
+	{
+		// shoot TwoDeck ship
+	}
+	else if (mPlayerFleet->isTypeShipExist(TypeShip::OneDeck))
+	{
+		// shoot OneDeck ship
+	}
+}
+
 sf::Vector2i World::computerSeekShip()
 {
 	std::vector<sf::Vector2i> validCells;
