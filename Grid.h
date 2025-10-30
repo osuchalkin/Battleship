@@ -30,8 +30,7 @@ public:
 	int getDeckCount() const { return mDeckCount; }	
 	bool checkShot(int x, int y);
 	void woundedOrKilled(Ship* ship, int x, int y);
-	sf::Vector2i getRandomPositionForShot();
-	// sf::Vector2i getCellForShot(TypeShip type);
+	//sf::Vector2i getRandomPositionForShot();
 	std::vector <std::vector<sf::Vector2i>> getValidPositions(ConditionPredicate checkCondition, int ship,
 		int colStart = 1, int colFinish = CELL_WIDTH - 1,
 		int rowStart = 1, int rowFinish = CELL_HEIGHT - 1);
