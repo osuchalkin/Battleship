@@ -7,6 +7,7 @@ public:
 	TextInfo();
 	//void setFont(const sf::Font& font);
 	//void setPosition(float x, float y);
+	void setWinnerText(const std::string& winner);
 	void render(sf::RenderWindow& window);
 private:
 	sf::Font mFont;

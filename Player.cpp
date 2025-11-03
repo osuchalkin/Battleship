@@ -58,6 +58,13 @@ void Player::checkShot(sf::Vector2i mousePos)
 		{
 			if (mEnemyCells->at(col).at(row).getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
 			{
+				// check if cell alredy shot
+				if (mEnemyGrid->getCell(col, row) == KILLED_CELL ||
+					mEnemyGrid->getCell(col, row) == WOUNDED_CELL ||
+					mEnemyGrid->getCell(col, row) == SHOOT_CELL)
+				{
+					return;
+				}
 				// process shot
 				if (mEnemyGrid->checkShot(col, row))
 				{

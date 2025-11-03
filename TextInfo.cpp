@@ -42,6 +42,16 @@ void TextInfo::setInfoText()
 	mInfoText.setOutlineThickness(1);
 }
 
+void TextInfo::setWinnerText(const std::string& winner)
+{
+	std::string winnerCopy = winner;
+	winnerCopy[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(winnerCopy[0])));
+
+	mInfoText.setString(winnerCopy + " wins! Press N to start a new game.");
+	mInfoText.setFillColor(DECK_WOUNDED_COLOR);
+	mInfoText.setPosition((SCREEN_WIDTH - mInfoText.getLocalBounds().width) / 2, SCREEN_HEIGHT - Y_MARGIN / 2);
+}
+
 void TextInfo::render(sf::RenderWindow& window)
 {
 	window.draw(mTitle);

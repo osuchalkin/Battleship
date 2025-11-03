@@ -168,6 +168,9 @@ void World::update(sf::Time deltaTime)
 
 void World::render(sf::RenderWindow& window)
 {
+	if (mWinner != "")
+		mTextInfo->setWinnerText(mWinner);
+
 	mTextInfo->render(window);
 
 	window.draw(mOceanGridSprite);
