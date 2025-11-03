@@ -42,5 +42,9 @@ private:
 
 	std::unique_ptr<Player> mPlayer;
 	std::unique_ptr<Computer> mComputer;
+
+	sf::Time timeAccumulator = sf::Time::Zero; // Накопленное время задержки
+	sf::Time moveDelay = sf::milliseconds(1500); // Требуемая задержка (1000 мс)
+	bool isDelayActive = false; // Флаг, указывающий, ждем ли мы
 };
 

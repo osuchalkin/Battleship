@@ -110,7 +110,24 @@ void World::update(sf::Time deltaTime)
 	{
 		if (mTurn == "computer")
 		{
-			mComputer->checkShot();
+			if (isDelayActive) {
+				// 1. Накапливаем прошедшее время
+				timeAccumulator += deltaTime;
+
+				// 2. Проверяем, достигнута ли целевая задержка
+				if (timeAccumulator >= moveDelay) {
+					// Задержка окончена
+					isDelayActive = false;
+					timeAccumulator = sf::Time::Zero; // Сброс аккумулятора
+
+					// 3. Выполняем действие, ради которого ждали (ход игрока)
+					mComputer->checkShot();
+				}
+
+				// 4. Важно: выходим, чтобы не выполнять основную логику, пока идет задержка
+				return;
+			}
+			
 			if (mPlayer->isFleetSank())
 			{
 				std::cout << "Computer WINS!\n";
@@ -121,6 +138,12 @@ void World::update(sf::Time deltaTime)
 			{
 				mComputer->mMissedTarget = false;
 				mTurn = "player"; // switch turn to player
+			}
+			else 
+			{
+				// Запускаем задержку перед следующим ходом компьютера
+				isDelayActive = true;
+				timeAccumulator = sf::Time::Zero; // Сброс аккумулятора
 			}
 		}
 		else if (mTurn == "player")
@@ -150,6 +173,12 @@ void World::render(sf::RenderWindow& window)
 	window.draw(mOceanGridSprite);
 	if (mGameState == GameState::Playing)
 	{
+		// hide mouse cursor for computer turn
+		if (mTurn == "computer")
+			window.setMouseCursorVisible(false);
+		else
+			window.setMouseCursorVisible(true);
+
 		window.draw(mRadarGridSprite);
 		mPlayer->render(window);
 		mComputer->render(window);

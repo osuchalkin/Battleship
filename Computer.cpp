@@ -58,6 +58,7 @@ void Computer::setupFleet()
 
 bool Computer::setShip(TypeShip type, int setup)
 {
+	// 6 methods of ship arrangement:  random, top, bottom, left, right, edges
 	// all grid
 	int widthStart = 1;
 	int heightStart = 1;
