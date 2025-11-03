@@ -128,21 +128,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Computer.cpp" />
     <ClCompile Include="Deck.cpp" />
     <ClCompile Include="Fleet.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerBase.cpp" />
     <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="TextInfo.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Computer.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Deck.h" />
     <ClInclude Include="Fleet.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerBase.h" />
     <ClInclude Include="Ship.h" />
+    <ClInclude Include="TextInfo.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
