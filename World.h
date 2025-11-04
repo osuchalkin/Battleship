@@ -18,7 +18,8 @@ public:
 
 private:
 	void generateWorld();
-
+	void startInit();
+	void newGame();
 private:
 	enum class GameState
 	{

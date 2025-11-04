@@ -9,6 +9,9 @@ public:
 	//void setPosition(float x, float y);
 	void setWinnerText(const std::string& winner);
 	void render(sf::RenderWindow& window);
+	void showInfo(sf::RenderWindow& window);
+public:
+	bool mShowInfo;
 private:
 	sf::Font mFont;
 	sf::Text mTitle;

@@ -32,6 +32,11 @@ void World::generateWorld()
 	mOceanGridSprite.setPosition(X_MARGIN, Y_MARGIN);
 	mRadarGridSprite.setPosition(X2_MARGIN, Y_MARGIN);
 
+	startInit();
+}
+
+void World::startInit()
+{
 	// random first turn
 	if (mComputer->getRandNum(0, 1) == 0)
 		mTurn = "player";
@@ -47,7 +52,7 @@ void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
 {
 	if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::N)
 	{
-		// new game
+		newGame();
 	}
 	else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Q)
 	{
@@ -55,7 +60,8 @@ void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
 	}
 	else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::I)
 	{
-		// info
+		// info about this game
+		mTextInfo->mShowInfo = true;
 	}
 	else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
 	{
@@ -188,7 +194,21 @@ void World::render(sf::RenderWindow& window)
 	}
 	else if (mGameState == GameState::Preparing)
 	{
+		window.setMouseCursorVisible(true);
 		mFleetPrepare->render(window);
 		mPlayer->render(window);
 	}
 }
+
+void World::newGame()
+{
+	mTextInfo = std::make_unique<TextInfo>();
+	mGameState = GameState::Preparing;
+	mTurn = "";
+	mWinner = "";
+	mPlayer = std::make_unique<Player>();
+	mComputer = std::make_unique<Computer>();
+	mFleetPrepare = std::make_unique<Fleet>();
+	startInit();
+}
+

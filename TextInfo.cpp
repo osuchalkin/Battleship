@@ -3,7 +3,8 @@
 
 
 TextInfo::TextInfo()
-	: mFont(),
+	: mShowInfo(false),
+	mFont(),
 	mTitle(),
 	mInfoText()
 {
@@ -56,4 +57,71 @@ void TextInfo::render(sf::RenderWindow& window)
 {
 	window.draw(mTitle);
 	window.draw(mInfoText);
+	if (mShowInfo)
+		showInfo(window);
+}
+
+void TextInfo::showInfo(sf::RenderWindow& window)
+{
+	sf::Text title("About BattleShip", mFont, 50);
+	title.setStyle(sf::Text::Bold);
+	float textMiddleWidth = title.getLocalBounds().width / 2;
+	title.setPosition(SCREEN_WIDTH / 2 - textMiddleWidth, Y_MARGIN / 2);
+	title.setFillColor(TEXT_COLOR);
+	title.setOutlineColor(TEXT_SHADOW_COLOR);
+	title.setOutlineThickness(2);
+
+	std::vector<sf::Text> infoes;
+
+	std::vector<std::string> messages = {
+		"Sea Battle (or Battleship)",
+		"is known worldwide as a pencil and paper game which dates from World War I.",
+		"",
+		"Maps created by Molly 'Cougarmint' Willits:",
+		"https://www.deviantart.com/cougarmint",
+		"",
+		"Sounds are from https://zvukipro.com/1748-zvuki-vystrela-iz-korabelnyh-pushek.html",
+		"",
+		"Programmed in C++ with SFML library.",
+		"",
+		"© Oleh Suchalkin  2025"
+	};
+
+	for (size_t i = 0; i < messages.size(); ++i)
+	{
+		sf::Text text(messages[i], mFont, 20);
+		float textMiddleWidth = text.getLocalBounds().width / 2;
+		text.setPosition(SCREEN_WIDTH / 2 - textMiddleWidth, SCREEN_HEIGHT / 3 + i * 30);
+		text.setFillColor(TEXT_COLOR);
+		text.setOutlineColor(TEXT_SHADOW_COLOR);
+		text.setOutlineThickness(1);
+
+		infoes.push_back(text);
+	}
+
+	bool finished = false;
+
+	while (!finished)
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				finished = true;
+				window.close();
+			}
+			if (event.type == sf::Event::KeyPressed)
+			{
+				mShowInfo = false;
+				finished = true;
+			}	
+		}
+
+		window.clear(BCG_COLOR);
+		window.draw(title);
+		for (const auto& text : infoes)
+			window.draw(text);
+		window.display();
+	}
 }
