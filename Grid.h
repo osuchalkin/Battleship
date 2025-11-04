@@ -2,6 +2,7 @@
 
 #include "Constants.h"
 #include "Ship.h"
+#include "SoundsRecorder.h"
 
 #include <array>
 #include <vector>
@@ -30,16 +31,18 @@ public:
 	int getDeckCount() const { return mDeckCount; }	
 	bool checkShot(int x, int y);
 	void woundedOrKilled(Ship* ship, int x, int y);
-	//sf::Vector2i getRandomPositionForShot();
 	std::vector <std::vector<sf::Vector2i>> getValidPositions(ConditionPredicate checkCondition, int ship,
 		int colStart = 1, int colFinish = CELL_WIDTH - 1,
 		int rowStart = 1, int rowFinish = CELL_HEIGHT - 1);
+	void setSound(bool soundOn) { mSoundOn = soundOn; }
 public:
 	bool mIsShipReady;
 	std::vector<sf::Vector2i> mPositions;
 private:
 	std::array<std::array<char, CELL_WIDTH>, CELL_HEIGHT> mGridCells;
 	int mDeckCount;
+	bool mSoundOn;
+	std::unique_ptr<SoundsRecorder> mRecorder;
 private:
 	bool checkPlaceShip(int x, int y);
 	void setHalo(char status);

@@ -17,7 +17,9 @@ static bool isNumberInSet(int number, const std::string& set_name) {
 Grid::Grid() :
 	mIsShipReady(false),
 	mGridCells(),
-	mDeckCount(0)
+	mDeckCount(0),
+	mSoundOn(true),
+	mRecorder(std::make_unique<SoundsRecorder>())
 {
 	//clearGrid();
 	for (auto& row : mGridCells)
@@ -33,6 +35,10 @@ void Grid::setDeck(int x, int y)
 	else if (checkPlaceShip(x, y))
 	{
 		mGridCells[x][y] = SHIP_CELL;
+
+		if (mSoundOn)
+			mRecorder->playSound(SoundType::SetDeck);
+
 		mDeckCount++;
 		mPositions.push_back({ x, y });
 		if (isNumberInSet(mDeckCount, "ShipReady"))
@@ -40,6 +46,8 @@ void Grid::setDeck(int x, int y)
 			// создать корабль на сетке (тип и координаты)
 			setHalo(SHIP_CELL);
 			mIsShipReady = true;
+			if (mSoundOn)
+				mRecorder->playSound(SoundType::SetShip);
 		}
 	}
 }
@@ -144,8 +152,12 @@ bool Grid::checkShot(int x, int y)
 {
 	if (mGridCells[x][y] == SHIP_CELL || mGridCells[x][y] == WOUNDED_CELL || mGridCells[x][y] == KILLED_CELL)
 		return true;
-	else 
+	else
+	{
+		if (mSoundOn)
+			mRecorder->playSound(SoundType::Shot);
 		return false;
+	}
 }
 
 void Grid::woundedOrKilled(Ship* ship, int x, int y)
@@ -156,6 +168,8 @@ void Grid::woundedOrKilled(Ship* ship, int x, int y)
 		for (const auto& pos : ship->getPositions())
 		{
 			mGridCells[pos.x][pos.y] = KILLED_CELL;
+			if (mSoundOn)
+				mRecorder->playSound(SoundType::Sunk);
 		}
 		ship->setShipState(ShipState::Sunk);
 		setHalo(KILLED_CELL);
@@ -163,32 +177,10 @@ void Grid::woundedOrKilled(Ship* ship, int x, int y)
 	else
 	{
 		mGridCells[x][y] = WOUNDED_CELL;
+		if (mSoundOn)
+			mRecorder->playSound(SoundType::Wounded);
 	}
 }
-
-/*
-sf::Vector2i Grid::getRandomPositionForShot()
-{
-	// get valid cells
-	std::vector <sf::Vector2i> validCells;
-	for (int col = 1; col < CELL_WIDTH - 1; col++)
-	{
-		for (int row = 1; row < CELL_HEIGHT - 1; row++)
-		{
-			if (mGridCells[col][row] != SHOOT_CELL &&
-				mGridCells[col][row] != WOUNDED_CELL &&
-				mGridCells[col][row] != KILLED_CELL)
-			{
-				validCells.push_back({ col, row });
-			}
-		}
-	}
-	int index = 0;
-	if (validCells.size() > 1)
-		index = rand() % validCells.size();
-	return validCells[index];
-}
-*/
 
 std::vector <std::vector<sf::Vector2i>> Grid::getValidPositions(ConditionPredicate checkCondition, int ship,
 	int colStart, int colFinish, int rowStart, int rowFinish)

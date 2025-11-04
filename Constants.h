@@ -22,6 +22,13 @@ inline std::string TTF = "data/Roboto-Regular.ttf";
 inline std::string OCEAN_GRID = "data/oceangrid.png";
 inline std::string RADAR_GRID = "data/radargrid.png";
 
+//sounds
+inline std::string SHOT_SOUND = "data/past.wav";
+inline std::string WOUNDED_SOUND = "data/wounded.wav";
+inline std::string SUNK_SOUND = "data/killed.wav";
+inline std::string SET_DECK_SOUND = "data/gobble.wav";
+inline std::string SET_SHIP_SOUND = "data/bonus.wav";
+
 // Colors
 const sf::Color BCG_COLOR(0, 170, 255);
 const sf::Color TEXT_COLOR(255, 255, 0);
@@ -68,3 +75,12 @@ constexpr char HALO_CELL = 'H';
 constexpr char WOUNDED_CELL = 'W';
 constexpr char KILLED_CELL = 'K';
 constexpr char SHOOT_CELL = 'X';
+
+enum class SoundType
+{
+	SetDeck,
+	SetShip,
+	Shot,
+	Wounded,
+	Sunk
+};

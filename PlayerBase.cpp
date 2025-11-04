@@ -48,18 +48,7 @@ void PlayerBase::renderCells(sf::RenderWindow& window, int margin)
 	for (size_t col = 1; col < CELL_WIDTH - 1; col++)
 	{
 		for (size_t row = 1; row < CELL_HEIGHT - 1; row++)
-		{
-			/*
-			//{
-				if (mGrid->getCell(col, row) == SHIP_CELL)
-				{
-					mCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
-					mCells[col][row].setFillColor(DECK_COLOR);
-					window.draw(mCells[col][row]);
-				}
-			//}
-			*/
-			
+		{			
 			if (mGrid->getCell(col, row) == WOUNDED_CELL)
 			{
 				mCells[col][row].setSize(sf::Vector2f(DECK_SIZE, DECK_SIZE));
@@ -107,4 +96,9 @@ void PlayerBase::renderShips(sf::RenderWindow& window, int margin)
 			}
 		}
 	}
+}
+
+void PlayerBase::setSound(bool soundOn)
+{
+	mGrid->setSound(soundOn);
 }

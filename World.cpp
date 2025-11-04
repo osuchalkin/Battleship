@@ -16,7 +16,8 @@ World::World() :
 	mTurn(""),
 	mWinner(""),
 	mPlayer(std::make_unique<Player>()),
-	mComputer(std::make_unique<Computer>())
+	mComputer(std::make_unique<Computer>()),
+	mSoundOn(true)
 {
 	generateWorld();
 }
@@ -66,6 +67,7 @@ void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
 	else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
 	{
 		// sound on / off
+		mSoundOn = !mSoundOn;
 	}
 	else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 	{
@@ -87,6 +89,10 @@ void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
 
 void World::update(sf::Time deltaTime)
 {
+	//sound update
+	mPlayer->setSound(mSoundOn);
+	mComputer->setSound(mSoundOn);
+
 	if (mGameState == GameState::Preparing)
 	{
 		// Расстановка кораблей
@@ -136,7 +142,6 @@ void World::update(sf::Time deltaTime)
 			
 			if (mPlayer->isFleetSank())
 			{
-				std::cout << "Computer WINS!\n";
 				mWinner = "computer";
 				//mGameState = GameState::GameOver;
 			}
@@ -156,7 +161,6 @@ void World::update(sf::Time deltaTime)
 		{
 			if (mComputer->isFleetSank())
 			{
-				std::cout << "Player WINS!\n";
 				mWinner = "player";
 				//mGameState = GameState::GameOver;
 			}

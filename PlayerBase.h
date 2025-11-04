@@ -31,6 +31,7 @@ public:
 		mEnemyCells = enemyCells;
 	}
 	bool isFleetSank() { return mFleet->isFleetDead(); }
+	void setSound(bool soundOn);
 public:
 	bool mMissedTarget;
 

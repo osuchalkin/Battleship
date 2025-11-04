@@ -148,8 +148,6 @@ bool Computer::setShip(TypeShip type, int setup)
 
 void Computer::checkShot()
 {
-	//sf::sleep(sf::milliseconds(500)); // pause for better effect
-
 	if (mEnemyFleet->isFleetDead())
 		return;
 
