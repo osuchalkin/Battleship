@@ -15,11 +15,11 @@ private:
 	sf::SoundBuffer mWoundedBuffer;
 	sf::SoundBuffer mSunkBuffer;
 	sf::SoundBuffer mSetDeckBuffer;
-	sf::SoundBuffer mSetShipBuffer;
+	//sf::SoundBuffer mSetShipBuffer;
 	sf::Sound mShotSound;
 	sf::Sound mWoundedSound;
 	sf::Sound mSunkSound;
 	sf::Sound mSetDeckSound;
-	sf::Sound mSetShipSound;
+	//sf::Sound mSetShipSound;
 };
 

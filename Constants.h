@@ -27,7 +27,7 @@ inline std::string SHOT_SOUND = "data/past.wav";
 inline std::string WOUNDED_SOUND = "data/wounded.wav";
 inline std::string SUNK_SOUND = "data/killed.wav";
 inline std::string SET_DECK_SOUND = "data/gobble.wav";
-inline std::string SET_SHIP_SOUND = "data/bonus.wav";
+//inline std::string SET_SHIP_SOUND = "data/appear.wav";
 
 // Colors
 const sf::Color BCG_COLOR(0, 170, 255);
