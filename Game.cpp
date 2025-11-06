@@ -3,7 +3,7 @@
 
 
 Game::Game() :
-	mWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Sea Battle", sf::Style::Close),
+	mWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Battleship", sf::Style::Close),
 	mIcon(),
 	mWorld(std::make_unique<World>())
 {

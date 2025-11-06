@@ -5,6 +5,7 @@
 
 Computer::Computer() :
 	PlayerBase(),
+	mNumberOfMeethods(10),
 	mShipWounded(false),
 	mWoundedCells()
 {
@@ -38,7 +39,8 @@ void Computer::setupFleet()
 		mGrid = std::make_unique<Grid>();
 		mFleet = std::make_unique<Fleet>();
 
-		int setup = getRandNum(0, 5);
+		// random setup method
+		int setup = getRandNum(0, mNumberOfMeethods - 1);
 
 		success = setShip(TypeShip::FourDeck, setup);
 		if (success)
@@ -49,6 +51,8 @@ void Computer::setupFleet()
 			setShip(TypeShip::OneDeck, 0);
 
 		attempts++;
+		std::cout << "Setup is method: " << setup << std::endl;
+		std::cout << "Computer fleet arrangement attempt: " << attempts << std::endl;
 		if (attempts >= MAX_ATTEMPTS) {
 			std::cerr << "Critical error: Cannot arrange fleet after " << MAX_ATTEMPTS << " attempts." << std::endl;
 			break;
@@ -99,6 +103,30 @@ bool Computer::setShip(TypeShip type, int setup)
 				mGrid->setCell(col, row, HALO_CELL);
 			}
 		}
+		break;
+	case 6:		// 3 top horizontal rows
+		widthStart = 1;
+		heightStart = 1;
+		widthEdge = CELL_WIDTH - 1;
+		heightEdge = CELL_HEIGHT - 8;
+		break;
+	case 7:		// 3 bottom horizontal rows
+		widthStart = 1;
+		heightStart = CELL_HEIGHT - 4;
+		widthEdge = CELL_WIDTH - 1;
+		heightEdge = CELL_HEIGHT - 1;
+		break;
+	case 8:		// 3 left vertical columns
+		widthStart = 1;
+		heightStart = 1;
+		widthEdge = CELL_WIDTH - 8;
+		heightEdge = CELL_HEIGHT - 1;
+		break;
+	case 9:		// 3 right vertical columns
+		widthStart = CELL_WIDTH - 4;
+		heightStart = 1;
+		widthEdge = CELL_WIDTH - 1;
+		heightEdge = CELL_HEIGHT - 1;
 		break;
 	default:
 		break;

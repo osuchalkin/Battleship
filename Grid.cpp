@@ -43,11 +43,8 @@ void Grid::setDeck(int x, int y)
 		mPositions.push_back({ x, y });
 		if (isNumberInSet(mDeckCount, "ShipReady"))
 		{
-			// создать корабль на сетке (тип и координаты)
 			setHalo(SHIP_CELL);
 			mIsShipReady = true;
-			if (mSoundOn)
-				mRecorder->playSound(SoundType::SetShip);
 		}
 	}
 }
@@ -198,7 +195,6 @@ std::vector <std::vector<sf::Vector2i>> Grid::getValidPositions(ConditionPredica
 			{
 				if (col + j < colFinish)
 				{
-					//if (mGridCells[col][row + j] != EMPTY_CELL)
 					if (checkCondition(col + j, row))
 					{
 						isValid = false;
@@ -225,7 +221,6 @@ std::vector <std::vector<sf::Vector2i>> Grid::getValidPositions(ConditionPredica
 				if (row + j < rowFinish)
 				{
 					if (checkCondition(col, row + j))
-					// if (mGridCells[col + j][row] != EMPTY_CELL)
 					{
 						isValid = false;
 						break;

@@ -27,18 +27,20 @@ inline std::string SHOT_SOUND = "data/past.wav";
 inline std::string WOUNDED_SOUND = "data/wounded.wav";
 inline std::string SUNK_SOUND = "data/killed.wav";
 inline std::string SET_DECK_SOUND = "data/gobble.wav";
-//inline std::string SET_SHIP_SOUND = "data/appear.wav";
 
 // Colors
-const sf::Color BCG_COLOR(0, 170, 255);
-const sf::Color TEXT_COLOR(255, 255, 0);
-const sf::Color TEXT_SHADOW_COLOR(170, 170, 0);
+const sf::Color BCG_COLOR(0, 51, 78);
+const sf::Color TEXT_COLOR(77, 210, 255);
+const sf::Color TEXT_SHADOW_COLOR(0, 40, 60);
+const sf::Color TEXT_INFO_COLOR(136, 221, 238);
+const sf::Color TEXT_WINNER_COLOR(255, 112, 67);
 
-const sf::Color DECK_COLOR(255, 255, 0);
-const sf::Color DECK_WOUNDED_COLOR(255, 0, 0);
-const sf::Color DECK_KILLED_COLOR(100, 100, 100);
+const sf::Color DECK_COLOR(76, 110, 245);
+const sf::Color DECK_WOUNDED_COLOR(230, 57, 70);
+const sf::Color DECK_KILLED_COLOR(109, 7, 26);
+const sf::Color KILLED_MARK_COLOR(255, 204, 213);
 
-const sf::Color HALO_COLOR(150, 150, 150);
+const sf::Color HALO_COLOR(58, 80, 107);
 
 // Deck
 constexpr float DECK_SIZE = 40;
@@ -79,7 +81,6 @@ constexpr char SHOOT_CELL = 'X';
 enum class SoundType
 {
 	SetDeck,
-	SetShip,
 	Shot,
 	Wounded,
 	Sunk

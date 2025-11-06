@@ -5,8 +5,6 @@ class TextInfo
 {
 public:
 	TextInfo();
-	//void setFont(const sf::Font& font);
-	//void setPosition(float x, float y);
 	void setWinnerText(const std::string& winner);
 	void render(sf::RenderWindow& window);
 	void showInfo(sf::RenderWindow& window);

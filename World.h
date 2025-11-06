@@ -24,8 +24,7 @@ private:
 	enum class GameState
 	{
 		Preparing,
-		Playing,
-		GameOver
+		Playing
 	};
 
 	GameState mGameState;

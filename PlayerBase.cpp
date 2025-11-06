@@ -20,10 +20,10 @@ PlayerBase::PlayerBase() :
 	// cross for killed ship
 	mCross.setPrimitiveType(sf::Lines);
 	mCross.resize(4);
-	mCross[0].color = sf::Color::White;
-	mCross[1].color = sf::Color::White;
-	mCross[2].color = sf::Color::White;
-	mCross[3].color = sf::Color::White;
+	mCross[0].color = KILLED_MARK_COLOR;
+	mCross[1].color = KILLED_MARK_COLOR;
+	mCross[2].color = KILLED_MARK_COLOR;
+	mCross[3].color = KILLED_MARK_COLOR;
 }
 
 void PlayerBase::render(sf::RenderWindow& window)

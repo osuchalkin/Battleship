@@ -23,10 +23,6 @@ SoundsRecorder::SoundsRecorder() :
 	if (!mSetDeckBuffer.loadFromFile(SET_DECK_SOUND))
 		throw std::runtime_error("Failed to load wav-file from data.");
 	mSetDeckSound.setBuffer(mSetDeckBuffer);
-	
-	//if (!mSetShipBuffer.loadFromFile(SET_SHIP_SOUND))
-	//	throw std::runtime_error("Failed to load wav-file from data.");
-	//mSetShipSound.setBuffer(mSetShipBuffer);
 }
 
 void SoundsRecorder::playSound(SoundType type)
@@ -45,9 +41,6 @@ void SoundsRecorder::playSound(SoundType type)
 	case SoundType::SetDeck:
 		mSetDeckSound.play();
 		break;
-	//case SoundType::SetShip:
-		//mSetShipSound.play();
-	//	break;
 	default:
 		break;
 	}

@@ -23,7 +23,7 @@ private:
 	sf::Vector2i seekShip();
 private:
 	std::mt19937 mt;
-
+	int mNumberOfMeethods;
 	bool mShipWounded;
 	std::vector<sf::Vector2i> mWoundedCells;
 };

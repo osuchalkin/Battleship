@@ -44,6 +44,7 @@ void World::startInit()
 	else
 		mTurn = "computer";
 
+	// setup fleets
 	mComputer->setupFleet();
 
 	mFleetPrepare->createFleetForPreparing();
@@ -75,12 +76,12 @@ void World::checkEvents(sf::RenderWindow& window, const sf::Event& event)
 
 		if (mGameState == GameState::Preparing)
 		{
-			// Расстановка кораблей
+			// Arrangement ships
 			mPlayer->setupFleet(mousePos);
 		}
 		else if (mGameState == GameState::Playing)
 		{
-			// Ход игрока
+			// Player's move
 			if (mTurn == "player")
 				mPlayer->checkShot(mousePos);
 		}
@@ -95,7 +96,6 @@ void World::update(sf::Time deltaTime)
 
 	if (mGameState == GameState::Preparing)
 	{
-		// Расстановка кораблей
 		if (mPlayer->mShipBuild)
 		{
 			mFleetPrepare->removePreparedShip();
@@ -143,7 +143,6 @@ void World::update(sf::Time deltaTime)
 			if (mPlayer->isFleetSank())
 			{
 				mWinner = "computer";
-				//mGameState = GameState::GameOver;
 			}
 			else if (mComputer->mMissedTarget)
 			{
@@ -162,7 +161,6 @@ void World::update(sf::Time deltaTime)
 			if (mComputer->isFleetSank())
 			{
 				mWinner = "player";
-				//mGameState = GameState::GameOver;
 			}
 			else if (mPlayer->mMissedTarget)
 			{
@@ -170,9 +168,6 @@ void World::update(sf::Time deltaTime)
 				mTurn = "computer"; // switch turn to computer
 			}
 		}
-
-	else if (mGameState == GameState::GameOver)
-			std::cout << "Game Over\n";
 	}
 }
 

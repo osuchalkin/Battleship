@@ -35,12 +35,9 @@ void TextInfo::setInfoText()
 {
 	mInfoText.setFont(mFont);
 	mInfoText.setCharacterSize(20);
-	mInfoText.setFillColor(TEXT_COLOR);
+	mInfoText.setFillColor(TEXT_INFO_COLOR);
 	mInfoText.setString("I - info text\tN - new game\tS - sound on / off\tQ - quit");
-	//mInfoText.setStyle(sf::Text::Bold);
 	mInfoText.setPosition((SCREEN_WIDTH - mInfoText.getLocalBounds().width) / 2, SCREEN_HEIGHT - Y_MARGIN / 2);
-	mInfoText.setOutlineColor(TEXT_SHADOW_COLOR);
-	mInfoText.setOutlineThickness(1);
 }
 
 void TextInfo::setWinnerText(const std::string& winner)
@@ -48,8 +45,8 @@ void TextInfo::setWinnerText(const std::string& winner)
 	std::string winnerCopy = winner;
 	winnerCopy[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(winnerCopy[0])));
 
+	mInfoText.setFillColor(TEXT_WINNER_COLOR);
 	mInfoText.setString(winnerCopy + " wins! Press N to start a new game.");
-	mInfoText.setFillColor(DECK_WOUNDED_COLOR);
 	mInfoText.setPosition((SCREEN_WIDTH - mInfoText.getLocalBounds().width) / 2, SCREEN_HEIGHT - Y_MARGIN / 2);
 }
 
@@ -92,9 +89,7 @@ void TextInfo::showInfo(sf::RenderWindow& window)
 		sf::Text text(messages[i], mFont, 20);
 		float textMiddleWidth = text.getLocalBounds().width / 2;
 		text.setPosition(SCREEN_WIDTH / 2 - textMiddleWidth, SCREEN_HEIGHT / 3 + i * 30);
-		text.setFillColor(TEXT_COLOR);
-		text.setOutlineColor(TEXT_SHADOW_COLOR);
-		text.setOutlineThickness(1);
+		text.setFillColor(TEXT_INFO_COLOR);
 
 		infoes.push_back(text);
 	}

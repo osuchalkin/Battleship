@@ -90,24 +90,6 @@ void Fleet::createShip(std::vector<sf::Vector2i>& positions)
 	addShip(ship);
 }
 
-/*
-TypeShip Fleet::getTypeShip(sf::Vector2i position)
-{
-	for (const auto& ship : mShips)
-	{
-		auto shipPositions = ship->getPositions();
-		for (const auto& pos : shipPositions)
-		{
-			if (static_cast<int>(pos.x) == position.x && static_cast<int>(pos.y) == position.y)
-			{
-				return ship->getType(); 
-			}
-		}
-	}
-	return TypeShip::OneDeck; // Default return value if no ship found at position - ??
-}
-*/
-
 Ship* Fleet::getShipAtPosition(sf::Vector2i position)
 {
 	for (const auto& ship : mShips)
