@@ -180,7 +180,7 @@ void Grid::woundedOrKilled(Ship* ship, int x, int y)
 }
 
 std::vector <std::vector<sf::Vector2i>> Grid::getValidPositions(ConditionPredicate checkCondition, int ship,
-	int colStart, int colFinish, int rowStart, int rowFinish)
+	std::string placement, int colStart, int colFinish, int rowStart, int rowFinish)
 {
 	std::vector<std::vector<sf::Vector2i>> validPositions;
 	// find valid positions for ship type
@@ -188,56 +188,64 @@ std::vector <std::vector<sf::Vector2i>> Grid::getValidPositions(ConditionPredica
 	{
 		for (int row = rowStart; row < rowFinish; row++)
 		{
-			// horizontal
 			bool isValid = true;
 			std::vector<sf::Vector2i> tempPositions;
-			for (size_t j = 0; j < ship; j++)
+			// horizontal
+			if (placement != "Vertical")
 			{
-				if (col + j < colFinish)
+				
+				for (size_t j = 0; j < ship; j++)
 				{
-					if (checkCondition(col + j, row))
+					if (col + j < colFinish)
+					{
+						if (checkCondition(col + j, row))
+						{
+							isValid = false;
+							break;
+						}
+						else
+						{
+							tempPositions.push_back(sf::Vector2i(static_cast<int>(col + j), static_cast<int>(row)));
+						}
+					}
+					else
 					{
 						isValid = false;
 						break;
 					}
-					else
-					{
-						tempPositions.push_back(sf::Vector2i(static_cast<int>(col + j), static_cast<int>(row)));
-					}
 				}
-				else
-				{
-					isValid = false;
-					break;
-				}
-			}
-			if (isValid)
-				validPositions.push_back(tempPositions);
+				if (isValid)
+					validPositions.push_back(tempPositions);
+			}	
 			// vertical
-			isValid = true;
-			tempPositions.clear();
-			for (size_t j = 0; j < ship; j++)
+			if (placement != "Horizontal")
 			{
-				if (row + j < rowFinish)
+				isValid = true;
+				tempPositions.clear();
+				for (size_t j = 0; j < ship; j++)
 				{
-					if (checkCondition(col, row + j))
+					if (row + j < rowFinish)
+					{
+						if (checkCondition(col, row + j))
+						{
+							isValid = false;
+							break;
+						}
+						else
+						{
+							tempPositions.push_back(sf::Vector2i(static_cast<int>(col), static_cast<int>(row + j)));
+						}
+					}
+					else
 					{
 						isValid = false;
 						break;
 					}
-					else
-					{
-						tempPositions.push_back(sf::Vector2i(static_cast<int>(col), static_cast<int>(row + j)));
-					}
 				}
-				else
-				{
-					isValid = false;
-					break;
-				}
+				if (isValid)
+					validPositions.push_back(tempPositions);
 			}
-			if (isValid)
-				validPositions.push_back(tempPositions);
+			
 		}
 	}
 	return validPositions;

@@ -32,6 +32,7 @@ public:
 	bool checkShot(int x, int y);
 	void woundedOrKilled(Ship* ship, int x, int y);
 	std::vector <std::vector<sf::Vector2i>> getValidPositions(ConditionPredicate checkCondition, int ship,
+		std::string placement = "Both",
 		int colStart = 1, int colFinish = CELL_WIDTH - 1,
 		int rowStart = 1, int rowFinish = CELL_HEIGHT - 1);
 	void setSound(bool soundOn) { mSoundOn = soundOn; }

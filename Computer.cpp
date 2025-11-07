@@ -33,14 +33,14 @@ void Computer::setupFleet()
 	const int MAX_ATTEMPTS = 100; // limit on attempts to arrange fleet
 	int attempts = 0;
 
+	// random setup method
+	int setup = 7;// getRandNum(0, mNumberOfMeethods - 1);
+
 	do
 	{
 		// clean computer grid and fleet
 		mGrid = std::make_unique<Grid>();
 		mFleet = std::make_unique<Fleet>();
-
-		// random setup method
-		int setup = getRandNum(0, mNumberOfMeethods - 1);
 
 		success = setShip(TypeShip::FourDeck, setup);
 		if (success)
@@ -55,7 +55,10 @@ void Computer::setupFleet()
 		std::cout << "Computer fleet arrangement attempt: " << attempts << std::endl;
 		if (attempts >= MAX_ATTEMPTS) {
 			std::cerr << "Critical error: Cannot arrange fleet after " << MAX_ATTEMPTS << " attempts." << std::endl;
-			break;
+			std::cout << "Switching to next arrangement method: " << std::endl;
+			attempts = 0;
+			setup++;
+			//break;
 		}
 	} while (!success);
 }
@@ -68,6 +71,7 @@ bool Computer::setShip(TypeShip type, int setup)
 	int heightStart = 1;
 	int widthEdge = CELL_WIDTH - 1;
 	int heightEdge = CELL_HEIGHT - 1;
+	std::string placement = "Both";	// Vertical and Horizontal
 
 	switch (setup)
 	{
@@ -109,24 +113,28 @@ bool Computer::setShip(TypeShip type, int setup)
 		heightStart = 1;
 		widthEdge = CELL_WIDTH - 1;
 		heightEdge = CELL_HEIGHT - 8;
+		placement = "Horizontal";
 		break;
 	case 7:		// 3 bottom horizontal rows
 		widthStart = 1;
 		heightStart = CELL_HEIGHT - 4;
 		widthEdge = CELL_WIDTH - 1;
 		heightEdge = CELL_HEIGHT - 1;
+		placement = "Horizontal";
 		break;
 	case 8:		// 3 left vertical columns
 		widthStart = 1;
 		heightStart = 1;
 		widthEdge = CELL_WIDTH - 8;
 		heightEdge = CELL_HEIGHT - 1;
+		placement = "Vertical";
 		break;
 	case 9:		// 3 right vertical columns
 		widthStart = CELL_WIDTH - 4;
 		heightStart = 1;
 		widthEdge = CELL_WIDTH - 1;
 		heightEdge = CELL_HEIGHT - 1;
+		placement = "Vertical";
 		break;
 	default:
 		break;
@@ -142,7 +150,7 @@ bool Computer::setShip(TypeShip type, int setup)
 	for (size_t i = 0; i < numberOfShips; i++)
 	{
 		std::vector <std::vector<sf::Vector2i>> validPositions = mGrid->getValidPositions(
-			computerCondition, ship,
+			computerCondition, ship, placement,
 			widthStart, widthEdge, heightStart, heightEdge);
 
 		// no valid positions
