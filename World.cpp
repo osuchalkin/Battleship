@@ -45,9 +45,8 @@ void World::startInit()
 		mTurn = "computer";
 
 	// setup fleets
-	mComputer->setupFleet();
-
 	mFleetPrepare->createFleetForPreparing();
+	mComputer->setupFleet();
 }
 
 void World::checkEvents(sf::RenderWindow& window, const sf::Event& event) 

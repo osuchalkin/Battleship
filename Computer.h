@@ -21,6 +21,7 @@ private:
 	sf::Vector2i shooting();
 	sf::Vector2i getCellForShot(TypeShip type);
 	sf::Vector2i seekShip();
+	sf::Vector2i searchCellForShot(const std::vector<std::vector<sf::Vector2i>>& matrix);
 private:
 	std::mt19937 mt;
 	int mNumberOfMeethods;

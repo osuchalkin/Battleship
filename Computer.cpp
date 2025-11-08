@@ -1,6 +1,8 @@
 #include "Computer.h"
 
 #include <iostream>
+#include <map>
+#include <algorithm>
 
 
 Computer::Computer() :
@@ -34,7 +36,7 @@ void Computer::setupFleet()
 	int attempts = 0;
 
 	// random setup method
-	int setup = 7;// getRandNum(0, mNumberOfMeethods - 1);
+	int setup = getRandNum(0, mNumberOfMeethods - 1);
 
 	do
 	{
@@ -51,11 +53,9 @@ void Computer::setupFleet()
 			setShip(TypeShip::OneDeck, 0);
 
 		attempts++;
-		std::cout << "Setup is method: " << setup << std::endl;
-		std::cout << "Computer fleet arrangement attempt: " << attempts << std::endl;
-		if (attempts >= MAX_ATTEMPTS) {
-			std::cerr << "Critical error: Cannot arrange fleet after " << MAX_ATTEMPTS << " attempts." << std::endl;
-			std::cout << "Switching to next arrangement method: " << std::endl;
+
+		if (attempts >= MAX_ATTEMPTS) 
+		{
 			attempts = 0;
 			setup++;
 			//break;
@@ -65,7 +65,7 @@ void Computer::setupFleet()
 
 bool Computer::setShip(TypeShip type, int setup)
 {
-	// 6 methods of ship arrangement:  random, top, bottom, left, right, edges
+	// 10 methods of ship arrangement:  random, top, bottom, left, right, edges
 	// all grid
 	int widthStart = 1;
 	int heightStart = 1;
@@ -241,7 +241,7 @@ sf::Vector2i Computer::shooting()
 	}
 }
 
-sf::Vector2i Computer::getCellForShot(TypeShip type)
+sf::Vector2i Computer::getCellForShot(TypeShip type)	// find all positions for shooting
 {
 	int numDeck = static_cast<int>(type);
 
@@ -255,19 +255,10 @@ sf::Vector2i Computer::getCellForShot(TypeShip type)
 	std::vector <std::vector<sf::Vector2i>> validPositions = mEnemyGrid->getValidPositions(
 		playerCondition, numDeck);
 
-	int index = 0;
-	if (validPositions.size() > 1)
-		index = getRandNum(0, validPositions.size() - 1);
-
-	std::vector<sf::Vector2i> position = validPositions[index];
-	int index2 = 0;
-	if (position.size() > 1)
-		index2 = getRandNum(0, position.size() - 1);
-
-	return position[index2];
+	return searchCellForShot(validPositions);
 }
 
-sf::Vector2i Computer::seekShip()
+sf::Vector2i Computer::seekShip()	// find cell around wounded ship
 {
 	std::vector<sf::Vector2i> validCells;
 
@@ -379,4 +370,43 @@ sf::Vector2i Computer::seekShip()
 		index = getRandNum(0, validCells.size() - 1);
 
 	return validCells[index];
+}
+
+sf::Vector2i Computer::searchCellForShot(const std::vector<std::vector<sf::Vector2i>>& matrix)
+// find mode of elements in matrix and return random one if several modes
+{
+	if (matrix.empty() || matrix[0].empty())
+		return { 0,0 };
+
+	std::vector<std::pair<sf::Vector2i, int>> counts; // (element, count)
+
+	for (const auto& row : matrix) {
+		for (const auto& elem : row) {
+			bool found = false;
+			for (auto& p : counts) {
+				if (p.first == elem) { 
+					p.second++;
+					found = true;
+					break;
+				}
+			}
+			if (!found) counts.emplace_back(elem, 1);
+		}
+	}
+
+	int max_count = 0;
+	std::vector<sf::Vector2i> modes;
+	for (const auto& p : counts) {
+		if (p.second > max_count) {
+			max_count = p.second;
+			modes = { p.first };	// new maximuum found, reset modes
+		}
+		else if (p.second == max_count) {
+			modes.push_back(p.first);
+		}
+	}
+
+	if (modes.empty()) return { 0,0 };
+	
+	return modes[getRandNum(0, modes.size() - 1)];
 }

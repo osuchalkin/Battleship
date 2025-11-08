@@ -193,7 +193,6 @@ std::vector <std::vector<sf::Vector2i>> Grid::getValidPositions(ConditionPredica
 			// horizontal
 			if (placement != "Vertical")
 			{
-				
 				for (size_t j = 0; j < ship; j++)
 				{
 					if (col + j < colFinish)
