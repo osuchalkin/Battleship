@@ -246,22 +246,37 @@ void World::newGame()
 
 void World::setWinner(const std::string& winner)
 {
+	mTextInfo->setWinnerText(winner, mMovePlayerCount);
+
+	std::vector<sf::Sprite>* wheels;
+	float startX;
+
 	if (winner == "player")
 	{
-		mTextInfo->setWinnerText("Player", mMovePlayerCount);
-		mPlayerWheels.push_back(mWinnerWheelSprite);
-		for (size_t i = 0; i < mPlayerWheels.size(); i++)
-		{
-			mPlayerWheels[i].setPosition(X_MARGIN + i * DECK_SPACE, Y_MARGIN - DECK_SPACE);
-		}
+		wheels = &mPlayerWheels;
+		startX = X_MARGIN;
 	}
 	else if (winner == "computer")
 	{
-		mTextInfo->setWinnerText("Computer", mMoveComputerCount);
-		mComputerWheels.push_back(mWinnerWheelSprite);
-		for (size_t i = 0; i < mComputerWheels.size(); i++)
-		{
-			mComputerWheels[i].setPosition(X2_MARGIN + i * DECK_SPACE, Y_MARGIN - DECK_SPACE);
-		}
+		wheels = &mComputerWheels;
+		startX = X2_MARGIN;
+	}
+	else
+	{
+		return;
+	}
+
+	wheels->push_back(mWinnerWheelSprite);
+
+	if (wheels->size() > 10)
+	{
+		wheels->pop_back();
+		// Если надо удалить *первый* (самый старый) элемент, тогда:
+		// wheels->erase(wheels->begin());
+	}
+
+	for (size_t i = 0; i < wheels->size(); i++)
+	{
+		(*wheels)[i].setPosition(startX + i * DECK_SPACE, Y_MARGIN - DECK_SPACE);
 	}
 }
