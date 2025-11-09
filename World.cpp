@@ -10,11 +10,17 @@ World::World() :
 	mOceanGridSprite(),
 	mRadarGridTexture(),
 	mRadarGridSprite(),
+	mWinnerWheelTexture(),
+	mWinnerWheelSprite(),
+	mComputerWheels(),
+	mPlayerWheels(),
 	mTextInfo(std::make_unique<TextInfo>()),
 	mGameState(GameState::Preparing),
 	mFleetPrepare(std::make_unique<Fleet>()),
 	mTurn(""),
 	mWinner(""),
+	mMovePlayerCount(0),
+	mMoveComputerCount(0),
 	mPlayer(std::make_unique<Player>()),
 	mComputer(std::make_unique<Computer>()),
 	mSoundOn(true)
@@ -33,6 +39,11 @@ void World::generateWorld()
 	mOceanGridSprite.setPosition(X_MARGIN, Y_MARGIN);
 	mRadarGridSprite.setPosition(X2_MARGIN, Y_MARGIN);
 
+	if (!mWinnerWheelTexture.loadFromFile(ICON_IMAGE))
+		throw std::runtime_error("Failed to load png-file from data.");
+	mWinnerWheelSprite.setTexture(mWinnerWheelTexture);
+	mWinnerWheelSprite.setScale(0.3f, 0.3f);
+
 	startInit();
 }
 
@@ -40,9 +51,15 @@ void World::startInit()
 {
 	// random first turn
 	if (mComputer->getRandNum(0, 1) == 0)
+	{
 		mTurn = "player";
+		mMovePlayerCount++;
+	}
 	else
+	{
 		mTurn = "computer";
+		mMoveComputerCount++;
+	}
 
 	// setup fleets
 	mFleetPrepare->createFleetForPreparing();
@@ -141,12 +158,15 @@ void World::update(sf::Time deltaTime)
 			
 			if (mPlayer->isFleetSank())
 			{
-				mWinner = "computer";
+				setWinner("computer");
+				mGameState = GameState::GameOver;
+				//mComputerWheels.push_back(mWinnerWheelSprite);
 			}
 			else if (mComputer->mMissedTarget)
 			{
 				mComputer->mMissedTarget = false;
 				mTurn = "player"; // switch turn to player
+				mMovePlayerCount++;
 			}
 			else 
 			{
@@ -159,12 +179,15 @@ void World::update(sf::Time deltaTime)
 		{
 			if (mComputer->isFleetSank())
 			{
-				mWinner = "player";
+				setWinner("player");
+				mGameState = GameState::GameOver;
+				//mPlayerWheels.push_back(mWinnerWheelSprite);
 			}
 			else if (mPlayer->mMissedTarget)
 			{
 				mPlayer->mMissedTarget = false;
 				mTurn = "computer"; // switch turn to computer
+				mMoveComputerCount++;
 			}
 		}
 	}
@@ -172,13 +195,22 @@ void World::update(sf::Time deltaTime)
 
 void World::render(sf::RenderWindow& window)
 {
-	if (mWinner != "")
-		mTextInfo->setWinnerText(mWinner);
-
+	/*if (mWinner != "")
+	{
+		if (mWinner == "player")
+		{
+			mTextInfo->setWinnerText("Player", mMovePlayerCount);
+		}
+		else if (mWinner == "computer")
+		{
+			mTextInfo->setWinnerText("Computer", mMoveComputerCount);
+		}
+	}
+	*/
 	mTextInfo->render(window);
 
 	window.draw(mOceanGridSprite);
-	if (mGameState == GameState::Playing)
+	if (mGameState == GameState::Playing || mGameState == GameState::GameOver)
 	{
 		// hide mouse cursor for computer turn
 		if (mTurn == "computer")
@@ -189,6 +221,20 @@ void World::render(sf::RenderWindow& window)
 		window.draw(mRadarGridSprite);
 		mPlayer->render(window);
 		mComputer->render(window);
+		if (mComputerWheels.size() > 0)
+		{
+			for (const auto& wheel : mComputerWheels)
+			{
+				window.draw(wheel);
+			}
+		}
+		if (mPlayerWheels.size() > 0)
+		{
+			for (const auto& wheel : mPlayerWheels)
+			{
+				window.draw(wheel);
+			}
+		}
 	}
 	else if (mGameState == GameState::Preparing)
 	{
@@ -204,9 +250,32 @@ void World::newGame()
 	mGameState = GameState::Preparing;
 	mTurn = "";
 	mWinner = "";
+	mMoveComputerCount = 0;
+	mMovePlayerCount = 0;
 	mPlayer = std::make_unique<Player>();
 	mComputer = std::make_unique<Computer>();
 	mFleetPrepare = std::make_unique<Fleet>();
 	startInit();
 }
 
+void World::setWinner(const std::string& winner)
+{
+	if (winner == "player")
+	{
+		mTextInfo->setWinnerText("Player", mMovePlayerCount);
+		mPlayerWheels.push_back(mWinnerWheelSprite);
+		for (size_t i = 0; i < mPlayerWheels.size(); i++)
+		{
+			mPlayerWheels[i].setPosition(X_MARGIN + i * DECK_SPACE, Y_MARGIN - DECK_SPACE);
+		}
+	}
+	else if (winner == "computer")
+	{
+		mTextInfo->setWinnerText("Computer", mMoveComputerCount);
+		mComputerWheels.push_back(mWinnerWheelSprite);
+		for (size_t i = 0; i < mComputerWheels.size(); i++)
+		{
+			mComputerWheels[i].setPosition(X2_MARGIN + i * DECK_SPACE, Y_MARGIN - DECK_SPACE);
+		}
+	}
+}

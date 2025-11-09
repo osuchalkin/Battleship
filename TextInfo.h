@@ -5,7 +5,7 @@ class TextInfo
 {
 public:
 	TextInfo();
-	void setWinnerText(const std::string& winner);
+	void setWinnerText(const std::string& winner, int moves);
 	void render(sf::RenderWindow& window);
 	void showInfo(sf::RenderWindow& window);
 public:

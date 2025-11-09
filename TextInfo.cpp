@@ -40,13 +40,14 @@ void TextInfo::setInfoText()
 	mInfoText.setPosition((SCREEN_WIDTH - mInfoText.getLocalBounds().width) / 2, SCREEN_HEIGHT - Y_MARGIN / 2);
 }
 
-void TextInfo::setWinnerText(const std::string& winner)
+void TextInfo::setWinnerText(const std::string& winner, int moves)
 {
 	std::string winnerCopy = winner;
 	winnerCopy[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(winnerCopy[0])));
 
+	std::string movesText = std::to_string(moves);
 	mInfoText.setFillColor(TEXT_WINNER_COLOR);
-	mInfoText.setString(winnerCopy + " wins! Press N to start a new game.");
+	mInfoText.setString(winnerCopy + " won in " + movesText + " moves! Press N to start a new game.");
 	mInfoText.setPosition((SCREEN_WIDTH - mInfoText.getLocalBounds().width) / 2, SCREEN_HEIGHT - Y_MARGIN / 2);
 }
 

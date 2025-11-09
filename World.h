@@ -20,11 +20,13 @@ private:
 	void generateWorld();
 	void startInit();
 	void newGame();
+	void setWinner(const std::string& winner);
 private:
 	enum class GameState
 	{
 		Preparing,
-		Playing
+		Playing,
+		GameOver
 	};
 
 	GameState mGameState;
@@ -32,6 +34,11 @@ private:
 	sf::Sprite mOceanGridSprite;
 	sf::Texture mRadarGridTexture;
 	sf::Sprite mRadarGridSprite;
+	sf::Texture mWinnerWheelTexture;
+	sf::Sprite mWinnerWheelSprite;
+
+	std::vector<sf::Sprite> mComputerWheels;
+	std::vector<sf::Sprite> mPlayerWheels;
 
 	std::unique_ptr<TextInfo> mTextInfo;
 
@@ -39,6 +46,8 @@ private:
 
 	std::string mTurn; // "player" or "computer"
 	std::string mWinner;
+	int mMovePlayerCount;
+	int mMoveComputerCount;
 
 	std::unique_ptr<Player> mPlayer;
 	std::unique_ptr<Computer> mComputer;
