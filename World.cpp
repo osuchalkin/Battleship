@@ -160,7 +160,6 @@ void World::update(sf::Time deltaTime)
 			{
 				setWinner("computer");
 				mGameState = GameState::GameOver;
-				//mComputerWheels.push_back(mWinnerWheelSprite);
 			}
 			else if (mComputer->mMissedTarget)
 			{
@@ -181,7 +180,6 @@ void World::update(sf::Time deltaTime)
 			{
 				setWinner("player");
 				mGameState = GameState::GameOver;
-				//mPlayerWheels.push_back(mWinnerWheelSprite);
 			}
 			else if (mPlayer->mMissedTarget)
 			{
@@ -195,18 +193,6 @@ void World::update(sf::Time deltaTime)
 
 void World::render(sf::RenderWindow& window)
 {
-	/*if (mWinner != "")
-	{
-		if (mWinner == "player")
-		{
-			mTextInfo->setWinnerText("Player", mMovePlayerCount);
-		}
-		else if (mWinner == "computer")
-		{
-			mTextInfo->setWinnerText("Computer", mMoveComputerCount);
-		}
-	}
-	*/
 	mTextInfo->render(window);
 
 	window.draw(mOceanGridSprite);
