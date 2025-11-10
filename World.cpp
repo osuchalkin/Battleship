@@ -42,7 +42,7 @@ void World::generateWorld()
 	if (!mWinnerWheelTexture.loadFromFile(ICON_IMAGE))
 		throw std::runtime_error("Failed to load png-file from data.");
 	mWinnerWheelSprite.setTexture(mWinnerWheelTexture);
-	mWinnerWheelSprite.setScale(0.3f, 0.3f);
+	mWinnerWheelSprite.setScale(WINNER_WHEEL_SCALE_FACTOR, WINNER_WHEEL_SCALE_FACTOR);
 
 	startInit();
 }
@@ -120,6 +120,7 @@ void World::update(sf::Time deltaTime)
 			
 		if (mFleetPrepare->isFleetDead())
 		{
+			// setup enemy data for both players
 			mPlayer->setupEnemyData(
 				mComputer->getGridPtr().get(), 
 				mComputer->getFleetPtr().get(),

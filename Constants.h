@@ -16,6 +16,7 @@ constexpr float X_MARGIN = (SCREEN_WIDTH / 2 - GRID_WIDTH) / 2;
 constexpr float X2_MARGIN = SCREEN_WIDTH - (GRID_WIDTH + X_MARGIN);
 constexpr float Y_MARGIN = (SCREEN_HEIGHT - GRID_WIDTH) / 2;
 
+constexpr float WINNER_WHEEL_SCALE_FACTOR = 0.3f;	// for ICON_IMAGE
 // resources
 inline std::string ICON_IMAGE = "data/wheel.png";
 inline std::string TTF = "data/Roboto-Regular.ttf";
