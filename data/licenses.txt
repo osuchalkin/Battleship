@@ -1,0 +1,53 @@
+================================================================================
+                           GAME ASSETS AND LICENSES
+================================================================================
+
+This software uses the following font assets:
+
+1. Roboto (Roboto-Regular.ttf)
+   Copyright (c) The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)
+   This Font Software is licensed under the SIL Open Font License, Version 1.1 . This license is copied below, and is also available with a FAQ at:  
+
+	https://openfontlicense.org
+
+
+================================================================================
+
+This software uses the following sound assets:
+
+1. Sound Effects:
+   Copyright (c) 2026, https://zvukipro.com/
+
+   Terms of Use
+   You are permitted to copy (download) the provided files, process them, 
+   and use them in your own works. 
+   Please cite Zvukipro.com as the source.
+
+   You may obtain a copy of the Terms of Use at
+
+      https://zvukipro.com/uslovija-ispolzovanija.html
+
+================================================================================
+
+This software uses the following image assets:
+
+1. Wheel icon (wheel.png)
+   Copyright (c) 2026, Pixelpress (Gary W. Gehiere)
+
+   Free for personal use
+   You may obtain a copy of the License at
+
+       https://icon-icons.com/licenses/free-personal
+
+
+2. Naval Battle Assets Pack (oceangrid.png, radargrid.png) 
+   Copyright (c) 2019, Cougarmint
+
+   Licensed under the CC BY 3.0;
+   Free for any purpose, even commercially.
+   You may obtain a copy of the License at
+
+       https://creativecommons.org/licenses/by/3.0/
+
+
+================================================================================
