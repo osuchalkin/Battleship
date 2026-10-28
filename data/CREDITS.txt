@@ -1,5 +1,5 @@
 GAME DESIGN and PROGRAMMING
-Oleh Suchalkin
+(c) Oleh Suchalkin 2025
 
 
 AUDIO & SOUND EFFECTS
